@@ -1,7 +1,11 @@
 package com.tomorrow_eyes.buddhacount;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +24,7 @@ public class KsitigarbhaFragment extends Fragment {
 
     private FragmentKsitigarbhaBinding binding;
     private int count = 0;
+    private Color bgColor;
 
     @Override
     public View onCreateView(
@@ -34,13 +39,27 @@ public class KsitigarbhaFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
         count = ReadFromFile();
         binding.textviewFirst.setText(Integer.toString(count));
+        Resources.Theme theme = getActivity().getTheme();
+        TypedValue typedValue = new TypedValue();
+        theme.resolveAttribute(R.attr.colorOnPrimary, typedValue, true);
+        bgColor = Color.valueOf(typedValue.data);
+
         binding.buttonCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 count++;
                 binding.textviewFirst.setText(Integer.toString(count));
+                float r = bgColor.red();
+                float g = bgColor.green();
+                float b = bgColor.blue();
+                if ((r > 0.1) && (b > 0.1) && (g > 0.1)){
+                    r -= 0.01; g -= 0.01; b -= 0.01;
+                    bgColor = Color.valueOf(r, g, b);
+                    binding.firstFrag.setBackgroundColor(bgColor.toArgb());
+                }
                 WriteToFile(count);
             }
         });
