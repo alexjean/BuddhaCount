@@ -33,8 +33,8 @@
 
     <Button
         android:id="@+id/button_count"
-        android:layout_width="166dp"
-        android:layout_height="90dp"
+        android:layout_width="204dp"
+        android:layout_height="146dp"
         android:background="@drawable/btn_oval"
         android:text="@string/ksitigarbha"
         app:layout_constraintBottom_toTopOf="@+id/button_first"

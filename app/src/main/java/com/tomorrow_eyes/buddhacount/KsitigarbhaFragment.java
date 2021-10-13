@@ -63,15 +63,8 @@ public class KsitigarbhaFragment extends Fragment {
                 WriteToFile(count);
             }
         });
-        /*
-        binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(KsitigarbhaFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
-            }
-        });
-        */
+
+
     }
 
     @Override

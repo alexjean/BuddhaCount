@@ -8,9 +8,13 @@
         <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/drawable/ic_launcher_background.xml" value="0.45282051282051283" />
         <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.45282051282051283" />
         <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/layout/activity_main.xml" value="0.3307291666666667" />
-        <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/layout/content_main.xml" value="0.32135416666666666" />
+        <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/layout/content_main.xml" value="0.20907617504051865" />
+        <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/layout/fragment_item.xml" value="0.2078125" />
+        <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/layout/fragment_item_list.xml" value="0.2078125" />
         <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/layout/fragment_ksitigarbha.xml" value="0.32135416666666666" />
         <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/layout/fragment_second.xml" value="0.32135416666666666" />
+        <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/layout/fragment_setup.xml" value="0.22447916666666667" />
+        <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/layout/switch_item.xml" value="0.2269021739130435" />
         <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/menu/menu_main.xml" value="0.32135416666666666" />
         <entry key="..\:/AlexDev/BuddhaCount/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.44166666666666665" />
       </map>

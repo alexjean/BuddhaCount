@@ -7,4 +7,14 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/sound_switch"
+        android:checkable="true"
+        android:checked="false"
+        android:orderInCategory="103"
+        android:title="@string/wood_fish" />
+    <item
+        android:id="@+id/item_leave"
+        android:orderInCategory="104"
+        android:title="@string/end" />
 </menu>
