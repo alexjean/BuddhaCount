@@ -65,9 +65,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 Fragment navFragment = getSupportFragmentManager().getPrimaryNavigationFragment();
                 Fragment frag1 = navFragment.getChildFragmentManager().getFragments().get(0);
-                if (frag1 instanceof ItemFragment) return false;
+                if (frag1 instanceof RecordFragment) return false;
                 NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-                navController.navigate(R.id.action_FirstFragment_to_itemFragment);
+                //navController.navigate(R.id.action_FirstFragment_to_itemFragment);
+                navController.navigate(R.id.action_FirstFragment_to_recordFragment);
                 // Toast.makeText(this,"記錄尚未完工",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.sound_switch:

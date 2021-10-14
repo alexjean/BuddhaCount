@@ -20,16 +20,20 @@ public class ItemContent {
      */
     public static final Map<String, CountItem> ITEM_MAP = new HashMap<>();
 
-    private static final int COUNT = 10;
+    private static final int COUNT = 9;
 
     static {
         // Add some sample items.
-        LocalDateTime temp = LocalDateTime.of(2021, 1, 1, 0, 0);
+        LocalDateTime temp = LocalDateTime.now();
+        int count;
         for (int i = 1; i <= COUNT; i++) {
-            int count = random.nextInt(100000);
-            temp=temp.plus(count+random.nextInt(1000000), ChronoUnit.SECONDS);
-            addItem(new CountItem(String.valueOf(i), "南無地藏菩薩", count, temp ));
+            count = random.nextInt(100000);
+            temp=temp.minus(count+random.nextInt(1000000), ChronoUnit.SECONDS);
+            addItem(new CountItem(Integer.toString(i),"南無地藏菩薩", count, temp ));
         }
+        count = random.nextInt(1000000);
+        temp=temp.minus(count+random.nextInt(1000000), ChronoUnit.SECONDS);
+        addItem(new CountItem("---", "記錄外總計:", count, temp));
     }
 
     private static void addItem(CountItem item) {

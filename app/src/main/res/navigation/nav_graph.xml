@@ -12,16 +12,16 @@
         tools:layout="@layout/fragment_ksitigarbha">
 
         <action
-            android:id="@+id/action_FirstFragment_to_itemFragment"
-            app:destination="@id/itemFragment" />
+            android:id="@+id/action_FirstFragment_to_recordFragment"
+            app:destination="@id/recordFragment" />
     </fragment>
     <fragment
-        android:id="@+id/itemFragment"
-        android:name="com.tomorrow_eyes.buddhacount.ItemFragment"
-        android:label="@string/fragment_item_label"
-        tools:layout="@layout/fragment_item_list" >
+        android:id="@+id/recordFragment"
+        android:name="com.tomorrow_eyes.buddhacount.RecordFragment"
+        android:label="記錄"
+        tools:layout="@layout/fragment_record" >
         <action
-            android:id="@+id/action_itemFragment_to_FirstFragment"
+            android:id="@+id/action_recordFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
 </navigation>
