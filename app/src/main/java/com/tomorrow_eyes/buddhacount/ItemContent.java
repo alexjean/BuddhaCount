@@ -1,13 +1,19 @@
 package com.tomorrow_eyes.buddhacount;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-public class CountContent {
+public class ItemContent {
 
     public static final List<CountItem> ITEMS = new ArrayList<>();
+    private static final Random random = new Random();
 
     /**
      * A map of sample (placeholder) items, by ID.
@@ -18,8 +24,11 @@ public class CountContent {
 
     static {
         // Add some sample items.
+        LocalDateTime temp = LocalDateTime.of(2021, 1, 1, 0, 0);
         for (int i = 1; i <= COUNT; i++) {
-            addItem(createPlaceholderItem(i));
+            int count = random.nextInt(100000);
+            temp=temp.plus(count+random.nextInt(1000000), ChronoUnit.SECONDS);
+            addItem(new CountItem(String.valueOf(i), "南無地藏菩薩", count, temp ));
         }
     }
 
@@ -28,31 +37,17 @@ public class CountContent {
         ITEM_MAP.put(item.id, item);
     }
 
-    private static CountItem createPlaceholderItem(int position) {
-        return new CountItem(String.valueOf(position), "Item " + position, makeDetails(position));
-    }
-
-    private static String makeDetails(int position) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
-        for (int i = 0; i < position; i++) {
-            builder.append("\nMore details information here.");
-        }
-        return builder.toString();
-    }
-
-    /**
-     * A placeholder item representing a piece of content.
-     */
     public static class CountItem {
         public final String id;
         public final String content;
-        public final String details;
+        public final int count;
+        public final LocalDateTime mark;
 
-        public CountItem(String id, String content, String details) {
+        public CountItem(String id, String content, int count, LocalDateTime mark) {
             this.id = id;
             this.content = content;
-            this.details = details;
+            this.count = count;
+            this.mark = mark;
         }
 
         @Override
