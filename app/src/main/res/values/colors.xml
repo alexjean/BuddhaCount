@@ -9,5 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="colorBtn">#8080D0</color>
     <color name="alex_background">#B2CEE4</color>
+    <color name="alex_200">#FF4060C0</color>
     <color name="alex_700">#FF203060</color>
 </resources>

@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,6 +27,8 @@ public class KsitigarbhaFragment extends Fragment {
     private FragmentKsitigarbhaBinding binding;
     private int count = 0;
     private Color bgColor;
+    private MediaPlayer mPlayer;
+    private MainActivity activity;
 
     @Override
     public View onCreateView(
@@ -46,6 +50,14 @@ public class KsitigarbhaFragment extends Fragment {
         TypedValue typedValue = new TypedValue();
         theme.resolveAttribute(R.attr.colorOnPrimary, typedValue, true);
         bgColor = Color.valueOf(typedValue.data);
+        mPlayer=MediaPlayer.create(getContext(), R.raw.wooden_knocker);
+        activity = (MainActivity) getActivity();
+        try {
+            mPlayer.prepare();
+        } catch (IllegalStateException | IOException e) {
+            e.printStackTrace();
+        }
+
 
         binding.buttonCount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +73,10 @@ public class KsitigarbhaFragment extends Fragment {
                     binding.firstFrag.setBackgroundColor(bgColor.toArgb());
                 }
                 WriteToFile(count);
+                if ( activity.woodenKnocker) {
+                    if (mPlayer.isPlaying()) mPlayer.stop();
+                    mPlayer.start();
+                }
             }
         });
 
@@ -69,6 +85,7 @@ public class KsitigarbhaFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        mPlayer.release();
         super.onDestroyView();
         binding = null;
     }

@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    public boolean woodenKnocker=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        woodenKnocker = menu.findItem(R.id.sound_switch).isChecked();
         return true;
     }
 
@@ -69,7 +71,8 @@ public class MainActivity extends AppCompatActivity {
                 // Toast.makeText(this,"記錄尚未完工",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.sound_switch:
-                item.setChecked(!item.isChecked());
+                woodenKnocker = !item.isChecked();
+                item.setChecked(woodenKnocker);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
