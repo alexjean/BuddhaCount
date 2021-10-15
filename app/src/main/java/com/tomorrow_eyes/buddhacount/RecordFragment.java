@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 
@@ -69,7 +70,11 @@ public class RecordFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         binding.textViewCount.setText(viewModel.getCountString());
         binding.buttonReset.setOnClickListener(view1 -> {
-            ItemContent.addItem(new ItemContent.CountItem("0","南無地藏菩薩",
+            if (viewModel.getCount() == 0) {
+                Toast.makeText(getContext(),"計數為0, 無從存檔!",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            ItemContent.insertItemUpdateList(new ItemContent.CountItem("0","南無地藏菩薩",
                     viewModel.getCount(), LocalDateTime.now()));
             viewModel.setCount(0);
             binding.textViewCount.setText(viewModel.getCountString());

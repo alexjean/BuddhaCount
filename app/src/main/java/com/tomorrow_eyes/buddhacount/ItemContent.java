@@ -41,6 +41,19 @@ public class ItemContent {
         ITEM_MAP.put(item.id, item);
     }
 
+    public static void insertItemUpdateList(CountItem item) {
+        int len = ITEMS.size();
+        if (len > COUNT) {   // 己超長,合併最後記錄
+            CountItem item2 = ITEMS.get(len - 2);
+            CountItem item1 = ITEMS.get(len - 1);
+            ITEMS.remove(len - 1);
+            ITEMS.remove(len - 2);
+            addItem(new CountItem(item1.id, item1.content,
+                    item1.count+ item2.count, item2.mark));
+        }
+        ITEMS.add(0, item);
+    }
+
     public static class CountItem {
         public final String id;
         public final String content;
