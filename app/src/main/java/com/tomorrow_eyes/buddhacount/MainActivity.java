@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
-    public boolean woodenKnocker=false;
+    private MyViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,22 +33,20 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        viewModel = new ViewModelProvider(this).get(MyViewModel.class);
 
         setSupportActionBar(binding.toolbar);
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-
-
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        woodenKnocker = menu.findItem(R.id.sound_switch).isChecked();
+        menu.findItem(R.id.sound_switch).setChecked(viewModel.getWoodenKnocker());
         return true;
     }
 
@@ -72,8 +71,9 @@ public class MainActivity extends AppCompatActivity {
                 // Toast.makeText(this,"記錄尚未完工",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.sound_switch:
-                woodenKnocker = !item.isChecked();
-                item.setChecked(woodenKnocker);
+                Boolean b1 = !viewModel.getWoodenKnocker();
+                viewModel.setWoodenKnocker(b1);
+                item.setChecked(b1);
                 break;
             default:
                 return super.onOptionsItemSelected(item);

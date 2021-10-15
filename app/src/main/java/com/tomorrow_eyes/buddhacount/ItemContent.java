@@ -33,10 +33,10 @@ public class ItemContent {
         }
         count = random.nextInt(1000000);
         temp=temp.minus(count+random.nextInt(1000000), ChronoUnit.SECONDS);
-        addItem(new CountItem("---", "記錄外總計:", count, temp));
+        addItem(new CountItem("---", "記錄外總計：", count, temp));
     }
 
-    private static void addItem(CountItem item) {
+    public static void addItem(CountItem item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
     }

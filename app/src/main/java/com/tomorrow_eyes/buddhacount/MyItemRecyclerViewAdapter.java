@@ -34,9 +34,15 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public void onBindViewHolder(final ViewHolder holder, int position) {
         CountItem item = mValues.get(position);
         holder.mItem = item;
-        holder.mIdView.setText(item.id);
+        String str = item.id;
+        int l1= str.length();
+        if ( l1 < 2) str = "  ".substring(l1) + str;
+        holder.mIdView.setText(str);
         holder.mContentView.setText(item.content);
-        holder.mCountView.setText(String.valueOf(item.count));
+        str = String.valueOf(item.count);
+        l1 = str.length();
+        if (l1 < 6)  str = "      ".substring(l1) + str;
+        holder.mCountView.setText(str);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
         holder.mMarkView.setText(item.mark.format(formatter));
     }
