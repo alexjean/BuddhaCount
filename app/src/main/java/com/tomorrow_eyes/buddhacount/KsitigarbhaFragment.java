@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -54,6 +55,17 @@ public class KsitigarbhaFragment extends Fragment {
             e.printStackTrace();
         }
 
+        binding.buttonCount.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() != MotionEvent.ACTION_DOWN) return false;
+                if (viewModel.getWoodenKnocker()) {
+                    if (mPlayer.isPlaying()) mPlayer.stop();
+                    mPlayer.start();
+                }
+                return false;
+            }
+        });
         binding.buttonCount.setOnClickListener(view1 -> {
             viewModel.addCount();
             binding.textviewFirst.setText(Integer.toString(viewModel.getCount()));
@@ -66,10 +78,6 @@ public class KsitigarbhaFragment extends Fragment {
                 binding.firstFrag.setBackgroundColor(bgColor.toArgb());
             }
             viewModel.writeCountToFile(getContext());;
-            if ( viewModel.getWoodenKnocker()) {
-                if (mPlayer.isPlaying()) mPlayer.stop();
-                mPlayer.start();
-            }
         });
     }
 
