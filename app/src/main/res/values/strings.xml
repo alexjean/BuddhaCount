@@ -8,6 +8,7 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="filename_count">count.dat</string>
+    <string name="filename_list">list.dat</string>
     <string name="end">結束</string>
     <string name="fragment_item_label">記錄</string>
     <string name="wood_fish">木魚聲</string>

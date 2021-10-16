@@ -51,10 +51,9 @@ public class MyViewModel extends ViewModel {
     public void writeCountToFile(Context context) {
         String fileName = context.getExternalFilesDir(null) + "/" +
                 context.getString(R.string.filename_count);
-        FileOutputStream stream;
         try {
             byte[] buf = getCountString().getBytes();
-            stream = new FileOutputStream(fileName, false);
+            FileOutputStream stream = new FileOutputStream(fileName, false);
             stream.write(buf);
             stream.close();
         } catch (IOException e) {
@@ -65,11 +64,10 @@ public class MyViewModel extends ViewModel {
     public void ReadCountFromFile(Context context) {
         String fileName = context.getExternalFilesDir(null) + "/" +
                 context.getString(R.string.filename_count);
-        FileInputStream stream;
         int i = 0;
         try {
             byte[] buf = new byte[256];
-            stream = new FileInputStream(fileName);
+            FileInputStream stream = new FileInputStream(fileName);
             i = stream.read(buf, 0, 250);
             stream.close();
             if (i > 0) {

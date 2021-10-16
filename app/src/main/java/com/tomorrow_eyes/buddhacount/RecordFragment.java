@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -69,13 +70,15 @@ public class RecordFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding.textViewCount.setText(viewModel.getCountString());
+        ItemContent.readFromFile(getContext());
+
         binding.buttonReset.setOnClickListener(view1 -> {
             if (viewModel.getCount() == 0) {
                 Toast.makeText(getContext(),"計數為0, 無從存檔!",Toast.LENGTH_SHORT).show();
                 return;
             }
             ItemContent.insertItemUpdateList(new ItemContent.CountItem("0","南無地藏菩薩",
-                    viewModel.getCount(), LocalDateTime.now()));
+                    viewModel.getCount(), LocalDate.now()));
             viewModel.setCount(0);
             binding.textViewCount.setText(viewModel.getCountString());
             // FragmentContainerView containerView = binding.fragmentContainerView;
@@ -88,6 +91,7 @@ public class RecordFragment extends Fragment {
             if (!(fragment instanceof ItemFragment)) return;
             RecyclerView recyclerView = (RecyclerView) fragment.getView();
             recyclerView.setAdapter(new MyItemRecyclerViewAdapter(ItemContent.ITEMS));
+            ItemContent.writeToFile(getContext());
         });
 
     }
