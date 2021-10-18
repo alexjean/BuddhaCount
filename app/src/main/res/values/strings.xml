@@ -14,7 +14,7 @@
     <string name="wood_fish">木魚聲</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="button_reset">重置計數及存檔</string>
+    <string name="button_reset">存檔後重置計數</string>
     <string name="filename_config">config.json</string>
     <!-- TODO: Remove or change this placeholder text -->
 
