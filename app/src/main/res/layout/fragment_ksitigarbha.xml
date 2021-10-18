@@ -37,7 +37,6 @@
         android:layout_width="204dp"
         android:layout_height="146dp"
         android:background="@drawable/btn_oval"
-        android:text="@string/ksitigarbha"
         app:layout_constraintBottom_toTopOf="@+id/button_first"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

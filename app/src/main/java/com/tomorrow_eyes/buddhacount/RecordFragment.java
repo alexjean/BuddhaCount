@@ -70,17 +70,22 @@ public class RecordFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding.textViewCount.setText(viewModel.getCountString());
+        binding.editTextTitle.setText(viewModel.getTitle());
         ItemContent.readFromFile(getContext());
 
         binding.buttonReset.setOnClickListener(view1 -> {
+            String content = binding.editTextTitle.getText().toString().trim();
+            viewModel.setTitle(content);
+            viewModel.writeConfig(getContext());
             if (viewModel.getCount() == 0) {
-                Toast.makeText(getContext(),"計數為0, 無從存檔!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),"計數為0, 不列記錄!",Toast.LENGTH_SHORT).show();
                 return;
             }
-            ItemContent.insertItemUpdateList(new ItemContent.CountItem("0","南無地藏菩薩",
+            ItemContent.insertItemUpdateList(new ItemContent.CountItem("0", content,
                     viewModel.getCount(), LocalDate.now()));
             viewModel.setCount(0);
             binding.textViewCount.setText(viewModel.getCountString());
+            viewModel.writeCountToFile(getContext());
             // FragmentContainerView containerView = binding.fragmentContainerView;
             // not support getFragment() until Fragment:1.4.0
             //ItemFragment itemFragment = (ItemFragment)containerView.getFragment();

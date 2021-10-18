@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
@@ -34,12 +35,15 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         viewModel = new ViewModelProvider(this).get(MyViewModel.class);
+        viewModel.readConfig(this);
 
         setSupportActionBar(binding.toolbar);
-
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) actionBar.setTitle(viewModel.getTitle());
     }
 
     @Override

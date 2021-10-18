@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -81,7 +82,7 @@ public class ItemContent {
                 CountItem ci= ITEMS.get(i);
                 sb.append(String.format("'%s', %d, %tF%n", ci.content, ci.count, ci.mark));
             }
-            byte[] buf = sb.toString().getBytes();
+            byte[] buf = sb.toString().getBytes(StandardCharsets.UTF_8);
             stream = new FileOutputStream(fileName, false);
             stream.write(buf);
             stream.close();
@@ -110,7 +111,7 @@ public class ItemContent {
                 context.getString(R.string.filename_list);
         try {
             FileInputStream stream = new FileInputStream(fileName);
-            InputStreamReader in = new InputStreamReader(stream);
+            InputStreamReader in = new InputStreamReader(stream, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(in);
             String line;
             ITEMS.clear();
