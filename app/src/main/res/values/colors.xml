@@ -9,8 +9,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="colorBtn">#8080D0</color>
     <color name="colorWoodenKnocker">#774A08</color>
-    <color name="alex_background">#A2BED4</color>
-    <color name="alex_200">#FF4060C0</color>
-    <color name="alex_700">#FF203060</color>
+    <color name="good_background">#A2BED4</color>
+    <color name="good_200">#FF4060C0</color>
+    <color name="good_700">#FF203060</color>
+    <color name="alex_background">#be934f</color>
+    <color name="alex_200">#774A08</color>
+    <color name="alex_700">#774A08</color>
 
 </resources>
