@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.sound_switch:
                 Boolean b1 = !viewModel.getWoodenKnocker();
                 viewModel.setWoodenKnocker(b1);
+                viewModel.writeConfig(this);
                 item.setChecked(b1);
                 break;
             default:

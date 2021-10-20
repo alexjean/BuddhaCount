@@ -31,16 +31,24 @@ public class ItemContent {
     /**
      * A map of sample (placeholder) items, by ID.
      */
-    public static final Map<String, CountItem> ITEM_MAP = new HashMap<>();
+    //public static final Map<String, CountItem> ITEM_MAP = new HashMap<>();
 
     private static final int COUNT = 9;
 
     static {
+        initList();
+    }
+
+    public static void initList() {
+        ITEMS.clear();
+        addItem(new CountItem("-", "記錄外總計：", 0, LocalDate.now()));
+    }
+
+    public static void makePseudoList() {
         // Add some sample items.
         LocalDateTime temp = LocalDateTime.now();
         int count = 0;
         LocalDate localDate;
-        /*
         for (int i = 1; i <= COUNT; i++) {
             count = random.nextInt(100000);
             temp=temp.minus(count+random.nextInt(1000000), ChronoUnit.SECONDS);
@@ -49,14 +57,13 @@ public class ItemContent {
         }
         count = random.nextInt(1000000);
         temp=temp.minus(count+random.nextInt(1000000), ChronoUnit.SECONDS);
-        */
         localDate = LocalDate.of(temp.getYear(), temp.getMonth(), temp.getDayOfMonth());
-        addItem(new CountItem("---", "記錄外總計：", count, localDate));
+        addItem(new CountItem("-", "記錄外總計：", count, localDate));
     }
 
     public static void addItem(CountItem item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+        // ITEM_MAP.put(item.id, item);
     }
 
     public static void insertItemUpdateList(CountItem item) {
@@ -118,6 +125,8 @@ public class ItemContent {
             for(int i=1;(line = reader.readLine()) != null; i++) {
                 addItem(i, line);
             }
+            if (ITEMS.size() == 0) initList();
+            ITEMS.get(ITEMS.size()-1).setId("-");  // 最後統計不想是10
             in.close();
             stream.close();
          } catch (IOException e) {
@@ -127,7 +136,7 @@ public class ItemContent {
 
 
     public static class CountItem {
-        public final String id;
+        public String id;
         public final String content;
         public final int count;
         public final LocalDate mark;
@@ -137,6 +146,11 @@ public class ItemContent {
             this.content = content;
             this.count = count;
             this.mark = mark;
+        }
+
+        public void setId(String id)
+        {
+            this.id = id;
         }
 
         @Override

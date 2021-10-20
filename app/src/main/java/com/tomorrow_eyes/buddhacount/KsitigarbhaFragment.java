@@ -62,8 +62,8 @@ public class KsitigarbhaFragment extends Fragment {
         binding.buttonCount.setOnTouchListener((v, event) -> {
             if (event.getAction() != MotionEvent.ACTION_DOWN) return true;
             if (viewModel.getWoodenKnocker()) {
-                    if (mPlayer.isPlaying()) mPlayer.stop();
-                    mPlayer.start();
+                if (mPlayer.isPlaying()) mPlayer.stop();
+                mPlayer.start();
             }
             viewModel.addCount();
             binding.textviewFirst.setText(Integer.toString(viewModel.getCount()));
@@ -71,7 +71,7 @@ public class KsitigarbhaFragment extends Fragment {
             return true;  // true 不處理OnClick
         });
         binding.buttonCount.setOnClickListener(v -> {
-            setBackgroundDarker();
+            // setBackgroundDarker();
         });
     }
 

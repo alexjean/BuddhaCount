@@ -87,10 +87,11 @@ public class MyViewModel extends ViewModel {
      }
 
     public String getTitle() {
-        if (title != null) return title.getValue();
-        title = new MediatorLiveData<>();
-        title.setValue("南無阿隬陀佛");
-        return "南無阿隬陀佛";
+        if (title == null) {
+            title = new MediatorLiveData<>();
+            title.setValue("南無阿隬陀佛");
+        }
+        return title.getValue();
     }
 
     public void setTitle(String value) {
@@ -102,14 +103,15 @@ public class MyViewModel extends ViewModel {
         String fileName = context.getExternalFilesDir(null) + "/" +
                 context.getString(R.string.filename_config);
         try {
-            byte[] buf = new byte[256];
+            byte[] buf = new byte[4096];
             FileInputStream stream = new FileInputStream(fileName);
-            int i = stream.read(buf, 0, 250);
+            int i = stream.read(buf, 0, 4095);
             stream.close();
             if (i > 0) {
                 String strJson = new String(buf, 0, i, StandardCharsets.UTF_8);
                 JSONObject jsonObj = new JSONObject(strJson);
                 setTitle(jsonObj.getString("Title"));
+                setWoodenKnocker(jsonObj.getBoolean("SoundSwitch"));
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -122,6 +124,7 @@ public class MyViewModel extends ViewModel {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("Title", getTitle());
+            jsonObject.put("SoundSwitch", getWoodenKnocker());
 
             byte[] buf = jsonObject.toString().getBytes(StandardCharsets.UTF_8);
             FileOutputStream stream = new FileOutputStream(fileName, false);
