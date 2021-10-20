@@ -62,7 +62,11 @@ public class KsitigarbhaFragment extends Fragment {
         binding.buttonCount.setOnTouchListener((v, event) -> {
             if (event.getAction() != MotionEvent.ACTION_DOWN) return true;
             if (viewModel.getWoodenKnocker()) {
-                if (mPlayer.isPlaying()) mPlayer.stop();
+                if (mPlayer.isPlaying()) {
+                    mPlayer.pause();
+                    mPlayer.seekTo(0);
+                    // mPlayer.stop();
+                }
                 mPlayer.start();
             }
             viewModel.addCount();

@@ -1,5 +1,8 @@
 package com.tomorrow_eyes.buddhacount;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,8 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 
 import java.time.LocalDate;
@@ -66,38 +71,63 @@ public class RecordFragment extends Fragment {
         return binding.getRoot();
     }
 
+
+    public void areYouOk(DialogInterface.OnClickListener onClickListener) {
+        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(getContext());
+        dlgAlert.setMessage("確定要重置計數嗎？");
+        dlgAlert.setTitle("記錄後重置");
+        dlgAlert.setCancelable(true);
+        dlgAlert.setPositiveButton("OK", onClickListener);
+        dlgAlert.create().show();
+    }
+
+    private Context mContext;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding.textViewCount.setText(viewModel.getCountString());
         binding.editTextTitle.setText(viewModel.getTitle());
-        ItemContent.readFromFile(getContext());
+        ItemContent.readFromFile(mContext=getContext());
 
         binding.buttonReset.setOnClickListener(view1 -> {
             String content = binding.editTextTitle.getText().toString().trim();
-            viewModel.setTitle(content);
-            viewModel.writeConfig(getContext());
-            if (viewModel.getCount() == 0) {
-                Toast.makeText(getContext(),"計數為0, 不列記錄!",Toast.LENGTH_SHORT).show();
-                return;
+            String msg = "計數為0, 不入上方列表";
+            if (!content.equals(viewModel.getTitle())) {
+                msg = "抬頭設為 "+content;
+                viewModel.setTitle(content);
+                viewModel.writeConfig(mContext);
             }
-            ItemContent.insertItemUpdateList(new ItemContent.CountItem("0", content,
-                    viewModel.getCount(), LocalDate.now()));
-            viewModel.setCount(0);
-            binding.textViewCount.setText(viewModel.getCountString());
-            viewModel.writeCountToFile(getContext());
-            // FragmentContainerView containerView = binding.fragmentContainerView;
-            // not support getFragment() until Fragment:1.4.0
-            //ItemFragment itemFragment = (ItemFragment)containerView.getFragment();
-            FragmentManager fragmentManager = getChildFragmentManager();
-            List<Fragment> list = fragmentManager.getFragments();
-            if (list == null || list.isEmpty()) return;
-            Fragment fragment = list.get(0);
-            if (!(fragment instanceof ItemFragment)) return;
-            RecyclerView recyclerView = (RecyclerView) fragment.getView();
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(ItemContent.ITEMS));
-            ItemContent.writeToFile(getContext());
+            if (viewModel.getCount() == 0) {
+                Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_SHORT);
+                View view2 = snackbar.getView();
+                TextView tv = view2.findViewById(com.google.android.material.R.id.snackbar_text);
+                tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                snackbar.show();
+            }
+            else
+                areYouOk((dialog, which) -> recordCountAdjustStatistic());
         });
-
     }
+
+    public void recordCountAdjustStatistic() {
+        String content = viewModel.getTitle();
+        ItemContent.insertItemUpdateList(new ItemContent.CountItem("0", content,
+                viewModel.getCount(), LocalDate.now()));
+        viewModel.setCount(0);
+        binding.textViewCount.setText(viewModel.getCountString());
+        viewModel.writeCountToFile(mContext);
+        // FragmentContainerView containerView = binding.fragmentContainerView;
+        // not support getFragment() until Fragment:1.4.0
+        //ItemFragment itemFragment = (ItemFragment)containerView.getFragment();
+        FragmentManager fragmentManager = getChildFragmentManager();
+        List<Fragment> list = fragmentManager.getFragments();
+        if (list.isEmpty()) return;
+        Fragment fragment = list.get(0);
+        if (!(fragment instanceof ItemFragment)) return;
+        RecyclerView recyclerView = (RecyclerView) fragment.getView();
+        assert recyclerView != null;
+        recyclerView.setAdapter(new MyItemRecyclerViewAdapter(ItemContent.ITEMS));
+        ItemContent.writeToFile(mContext);
+    }
+
 }
