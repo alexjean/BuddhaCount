@@ -90,7 +90,9 @@ public class RecordFragment extends Fragment {
         ItemContent.readFromFile(mContext=getContext());
 
         binding.buttonReset.setOnClickListener(view1 -> {
-            String content = binding.editTextTitle.getText().toString().trim();
+            String content = binding.editTextTitle.getText().toString();
+            content=content.replace(",","").trim();  // 不准有逗号
+            binding.editTextTitle.setText(content);
             String msg = "計數為0, 不入上方列表";
             if (!content.equals(viewModel.getTitle())) {
                 msg = "抬頭設為 "+content;
