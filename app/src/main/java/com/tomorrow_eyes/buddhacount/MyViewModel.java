@@ -45,8 +45,8 @@ public class MyViewModel extends ViewModel {
     public Boolean getWoodenKnocker() {
         if (woodenKnocker != null) return woodenKnocker.getValue();
         woodenKnocker = new MutableLiveData<>();
-        woodenKnocker.setValue(false);
-        return false;
+        woodenKnocker.setValue(true);
+        return true;
     }
 
     public void setWoodenKnocker(Boolean value) {

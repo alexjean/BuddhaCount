@@ -10,7 +10,7 @@
     <item
         android:id="@+id/sound_switch"
         android:checkable="true"
-        android:checked="false"
+        android:checked="true"
         android:orderInCategory="103"
         android:title="@string/wood_fish" />
     <item

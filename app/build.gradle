@@ -3,14 +3,22 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\alexj\\GoogePlayKey.jks')
+            storePassword 'loveAlex'
+            keyPassword 'loveAlex'
+            keyAlias 'tomorrow eyes'
+        }
+    }
     compileSdk 31
 
     defaultConfig {
         applicationId "com.tomorrow_eyes.buddhacount"
-        minSdk 29
-        targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        minSdk 26
+        targetSdk 30
+        versionCode 3
+        versionName '1.01'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
