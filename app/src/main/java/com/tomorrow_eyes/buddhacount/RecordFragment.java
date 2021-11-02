@@ -91,7 +91,8 @@ public class RecordFragment extends Fragment {
 
         binding.buttonReset.setOnClickListener(view1 -> {
             String content = binding.editTextTitle.getText().toString();
-            content=content.replace(",","").trim();  // 不准有逗号
+            content=content.replace(",","");  // 不准有逗号
+            content=content.replace("\n", " ").trim();
             binding.editTextTitle.setText(content);
             String msg = "計數為0, 不入上方列表";
             if (!content.equals(viewModel.getTitle())) {
