@@ -40,8 +40,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mIdView.setText(str);
         holder.mContentView.setText(item.content);
         str = String.valueOf(item.count);
-        l1 = str.length();
-        if (l1 < 6)  str = "      ".substring(l1) + str;
+        // l1 = str.length();
+        // if (l1 < 6)  str = "      ".substring(l1) + str;
         holder.mCountView.setText(str);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
         holder.mMarkView.setText(item.mark.format(formatter));
