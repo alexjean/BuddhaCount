@@ -1,5 +1,7 @@
 package com.tomorrow_eyes.buddhacount;
 
+import static androidx.recyclerview.widget.ItemTouchHelper.*;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,32 +10,31 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.tomorrow_eyes.buddhacount.ItemContent.CountItem;
 import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-
 
 public class RecordFragment extends Fragment {
 
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
 
-//    private String mParam1;
-//    private String mParam2;
+    private String mParam1;
+    private String mParam2;
 
     private FragmentRecordBinding binding;
     private MyViewModel viewModel;
@@ -55,8 +56,8 @@ public class RecordFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            //mParam1 = getArguments().getString(ARG_PARAM1);
-            //mParam2 = getArguments().getString(ARG_PARAM2);
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -111,27 +112,97 @@ public class RecordFragment extends Fragment {
         });
     }
 
-    public void recordCountAdjustStatistic() {
-        String content = viewModel.getTitle();
-        ItemContent.insertItemUpdateList(new ItemContent.CountItem("0", content,
-                viewModel.getCount(), LocalDate.now()));
-        viewModel.setCount(0);
-        binding.textViewCount.setText(viewModel.getCountString());
-        viewModel.writeCountToFile(mContext);
+    @Override
+    public void onStart() {
+        super.onStart();
+        attachItemTouchHelper();  // 在onViewCreated呼叫,recyclerView還是null
+    }
+
+    private RecyclerView getSubRecyclerView() {
         // FragmentContainerView containerView = binding.fragmentContainerView;
         // not support getFragment() until Fragment:1.4.0
         //ItemFragment itemFragment = (ItemFragment)containerView.getFragment();
         FragmentManager fragmentManager = getChildFragmentManager();
         List<Fragment> list = fragmentManager.getFragments();
-        if (list.isEmpty()) return;
+        if (list.isEmpty()) return null;
         Fragment fragment = list.get(0);
-        if (!(fragment instanceof ItemFragment)) return;
+        if (!(fragment instanceof ItemFragment)) return null;
         RecyclerView recyclerView = (RecyclerView) fragment.getView();
-        assert recyclerView != null;
+        return recyclerView;
+    }
+
+    public void recordCountAdjustStatistic() {
+        String content = viewModel.getTitle();
+        ItemContent.insertItemUpdateList(new CountItem("0", content,
+                viewModel.getCount(), LocalDate.now()));
+        viewModel.setCount(0);
+        binding.textViewCount.setText(viewModel.getCountString());
+        viewModel.writeCountToFile(mContext);
+        RecyclerView recyclerView = getSubRecyclerView();
+        if (recyclerView == null) return;
         //recyclerView.setAdapter(new MyItemRecyclerViewAdapter(ItemContent.ITEMS));
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
         if (adapter != null) adapter.notifyDataSetChanged();
         ItemContent.writeToFile(mContext);
     }
+
+    public void attachItemTouchHelper()
+    {
+        RecyclerView recyclerView = getSubRecyclerView();
+        if (recyclerView == null) return;
+        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        if (adapter == null) return;
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new Callback() {
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
+                    final int dragFlags = UP | DOWN |
+                            LEFT | RIGHT;
+                    final int swipeFlags = 0;
+                    return makeMovementFlags(dragFlags, swipeFlags);
+                } else {
+                    final int dragFlags = UP | DOWN;
+                    final int swipeFlags = START;
+                    return makeMovementFlags(dragFlags, swipeFlags);
+                }
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAbsoluteAdapterPosition();
+                CountItem item = ItemContent.ITEMS.get(position);
+                String content = viewModel.getTitle();
+                int count = viewModel.getCount();
+                LocalDate mark = viewModel.getMark();
+                CountItem item1 = new CountItem(item.id, content, count, mark);
+                viewModel.setTitle(item.content);
+                viewModel.setCount(item.count);
+                viewModel.setMark(item.mark);
+                binding.textViewCount.setText(viewModel.getCountString());
+                binding.editTextTitle.setText(viewModel.getTitle());
+                ItemContent.ITEMS.set(position, item1);
+                adapter.notifyItemChanged(position);
+                Context context = getContext();
+                viewModel.writeConfig(context);
+                viewModel.writeCountToFile(context);
+                ItemContent.writeToFile(context);
+                String msg = String.format("編號<%s>己和前台互換!", item.id);
+                Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public boolean isLongPressDragEnabled() {
+                return false;
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+    }
+
 
 }

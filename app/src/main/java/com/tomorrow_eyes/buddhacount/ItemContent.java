@@ -44,6 +44,7 @@ public class ItemContent {
         addItem(new CountItem("-", "記錄外總計：", 0, LocalDate.now()));
     }
 
+/*
     public static void makePseudoList() {
         // Add some sample items.
         LocalDateTime temp = LocalDateTime.now();
@@ -60,6 +61,7 @@ public class ItemContent {
         localDate = LocalDate.of(temp.getYear(), temp.getMonth(), temp.getDayOfMonth());
         addItem(new CountItem("-", "記錄外總計：", count, localDate));
     }
+ */
 
     public static void addItem(CountItem item) {
         ITEMS.add(item);
@@ -71,9 +73,12 @@ public class ItemContent {
         if (len > COUNT) {   // 己超長,合併最後記錄
             CountItem item2 = ITEMS.get(len - 2);
             CountItem item1 = ITEMS.get(len - 1);
+            String content = "列表外總計：";
+            if (item2.content.equals(item1.content))
+                content = item1.content;
             ITEMS.remove(len - 1);
             ITEMS.remove(len - 2);
-            addItem(new CountItem(item1.id, "記錄外總計：",
+            addItem(new CountItem(item1.id, content ,
                     item1.count+ item2.count, item2.mark));
         }
         ITEMS.add(0, item);
@@ -99,7 +104,7 @@ public class ItemContent {
     }
 
     private static void addItem(int id, String line) {
-        System.out.println(line);
+        // System.out.println(line);
         try {
             String[] split = line.split(",");
             String idStr = Integer.toString(id);

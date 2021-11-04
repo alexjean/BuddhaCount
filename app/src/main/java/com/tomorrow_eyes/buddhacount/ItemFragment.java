@@ -62,6 +62,7 @@ public class ItemFragment extends Fragment {
             MyItemRecyclerViewAdapter adapter = new MyItemRecyclerViewAdapter(ItemContent.ITEMS);
             recyclerView.setAdapter(adapter);
 
+            // LongClickListener for 刪除
             adapter.setOnRecyclerViewItemLongClickListener((position, itemView) -> {
                 Drawable background=itemView.getBackground();
                 itemView.setBackgroundColor(Color.LTGRAY);
@@ -81,67 +82,7 @@ public class ItemFragment extends Fragment {
                 popupMenu.show();
                 vibrator.vibrate(VibrationEffect.createOneShot(150,200));
             });
-/*
-            mItemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
-                @Override
-                public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                    if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
-                        final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN |
-                                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
-                        final int swipeFlags = 0;
-                        return makeMovementFlags(dragFlags, swipeFlags);
-                    } else {
-                        final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-                        final int swipeFlags = ItemTouchHelper.START;
-                        return makeMovementFlags(dragFlags, swipeFlags);
-                    }
-                }
 
-                @Override
-                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                    int fromPosition = viewHolder.getAbsoluteAdapterPosition();
-                    int toPosition = target.getAbsoluteAdapterPosition();
-                    if (fromPosition < toPosition) {
-                        for (int i = fromPosition; i < toPosition; i++) {
-                            Collections.swap(ItemContent.ITEMS, i, i + 1);
-                        }
-                    } else {
-                        for (int i = fromPosition; i > toPosition; i--) {
-                            Collections.swap(ItemContent.ITEMS, i, i - 1);
-                        }
-                    }
-                    //myAdapter.notifyItemMoved(fromPosition, toPosition);
-                    return true;
-                }
-
-                @Override
-                public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                    int position = viewHolder.getAbsoluteAdapterPosition();
-//                myAdapter.notifyItemRemoved(position);
-//                datas.remove(position);
-                }
-
-                @Override
-                public boolean isLongPressDragEnabled() {
-                    return false;
-                }
-
-                @Override
-                public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-                    if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
-                        viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
-                    }
-                    super.onSelectedChanged(viewHolder, actionState);
-                }
-
-                @Override
-                public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                    super.clearView(recyclerView, viewHolder);
-                    viewHolder.itemView.setBackgroundColor(0);
-                }
-            });
- */
-//            mItemTouchHelper.attachToRecyclerView(recyclerView);
         }
         return view;
     }

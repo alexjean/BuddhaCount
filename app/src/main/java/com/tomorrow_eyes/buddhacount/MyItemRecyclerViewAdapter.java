@@ -31,7 +31,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         ViewHolder viewHolder = new ViewHolder(binding);
         view.setOnLongClickListener(v -> {
             int position = viewHolder.getLayoutPosition();
-            //String msg = "Item<" + String.valueOf(position) + "> long Clicked!";
+            String msg = "Item<" + position + "> long Clicked!";
             //Snackbar.make(view, msg, Snackbar.LENGTH_SHORT).show();
             if (longClickListener != null)
                 longClickListener.onRecyclerViewItemLongClick(position, view);

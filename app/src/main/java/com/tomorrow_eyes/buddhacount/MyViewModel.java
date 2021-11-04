@@ -8,14 +8,18 @@ import androidx.lifecycle.ViewModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Dictionary;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class MyViewModel extends ViewModel {
     private MutableLiveData<Integer> count;
+    private MutableLiveData<LocalDate> mark;
     private MutableLiveData<Boolean> woodenKnocker;
     private MutableLiveData<String>  title;
 
@@ -42,6 +46,20 @@ public class MyViewModel extends ViewModel {
         count.setValue(value);
     }
 
+    public LocalDate getMark() {
+        if (mark == null) {
+            mark = new MediatorLiveData<>();
+            mark.setValue(LocalDate.now());
+        }
+        return mark.getValue();
+    }
+
+    public void setMark(LocalDate value) {
+        if (mark == null) mark = new MediatorLiveData<>();
+        mark.setValue(value);
+    }
+
+
     public Boolean getWoodenKnocker() {
         if (woodenKnocker != null) return woodenKnocker.getValue();
         woodenKnocker = new MutableLiveData<>();
@@ -58,7 +76,9 @@ public class MyViewModel extends ViewModel {
         String fileName = context.getExternalFilesDir(null) + "/" +
                 context.getString(R.string.filename_count);
         try {
-            byte[] buf = getCountString().getBytes(StandardCharsets.UTF_8);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
+            String str = getCountString() + "," + getMark().format(formatter);
+            byte[] buf = str.getBytes(StandardCharsets.UTF_8);
             FileOutputStream stream = new FileOutputStream(fileName, false);
             stream.write(buf);
             stream.close();
@@ -70,20 +90,29 @@ public class MyViewModel extends ViewModel {
     public void ReadCountFromFile(Context context) {
         String fileName = context.getExternalFilesDir(null) + "/" +
                 context.getString(R.string.filename_count);
-        int i = 0;
+        int count1 = 0;
+        LocalDate date1 = LocalDate.now();
         try {
-            byte[] buf = new byte[256];
             FileInputStream stream = new FileInputStream(fileName);
-            i = stream.read(buf, 0, 250);
-            stream.close();
-            if (i > 0) {
-                String str = new String(buf, 0, i, StandardCharsets.UTF_8);
-                i = Integer.parseInt(str);
+            InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+            BufferedReader bufferedReader = new BufferedReader(reader,256);
+            String line = bufferedReader.readLine();
+            try {
+                String[] split = line.split(",");
+                count1 = Integer.parseInt(split[0].trim());
+                if (split.length > 1) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
+                    date1 = LocalDate.parse(split[1].trim(), formatter);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
+            bufferedReader.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        setCount(i);
+        setCount(count1);
+        setMark(date1);
      }
 
     public String getTitle() {
