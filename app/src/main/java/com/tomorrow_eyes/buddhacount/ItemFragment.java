@@ -1,7 +1,9 @@
 package com.tomorrow_eyes.buddhacount;
 
+import android.app.Service;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,9 +12,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 
 public class ItemFragment extends Fragment {
@@ -54,8 +59,29 @@ public class ItemFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(ItemContent.ITEMS));
+            MyItemRecyclerViewAdapter adapter = new MyItemRecyclerViewAdapter(ItemContent.ITEMS);
+            recyclerView.setAdapter(adapter);
 
+            adapter.setOnRecyclerViewItemLongClickListener((position, itemView) -> {
+                Drawable background=itemView.getBackground();
+                itemView.setBackgroundColor(Color.LTGRAY);
+                PopupMenu popupMenu = new PopupMenu(context,itemView);
+                popupMenu.getMenuInflater().inflate(R.menu.menu_popup,popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    if(item.getItemId()==R.id.popup_delete) {
+                        ItemContent.ITEMS.remove(position);
+                        ItemContent.writeToFile(context);
+                        adapter.notifyItemRemoved(position);
+                        return true;
+                    }
+                    return false;
+                });
+                popupMenu.setOnDismissListener(menu -> itemView.setBackground(background));
+                Vibrator vibrator = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
+                popupMenu.show();
+                vibrator.vibrate(VibrationEffect.createOneShot(150,200));
+            });
+/*
             mItemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
                 @Override
                 public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
@@ -66,28 +92,25 @@ public class ItemFragment extends Fragment {
                         return makeMovementFlags(dragFlags, swipeFlags);
                     } else {
                         final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-                        final int swipeFlags = 0;
-//                    final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+                        final int swipeFlags = ItemTouchHelper.START;
                         return makeMovementFlags(dragFlags, swipeFlags);
                     }
                 }
 
                 @Override
                 public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-/*
                     int fromPosition = viewHolder.getAbsoluteAdapterPosition();
                     int toPosition = target.getAbsoluteAdapterPosition();
                     if (fromPosition < toPosition) {
                         for (int i = fromPosition; i < toPosition; i++) {
-                            Collections.swap(datas, i, i + 1);
+                            Collections.swap(ItemContent.ITEMS, i, i + 1);
                         }
                     } else {
                         for (int i = fromPosition; i > toPosition; i--) {
-                            Collections.swap(datas, i, i - 1);
+                            Collections.swap(ItemContent.ITEMS, i, i - 1);
                         }
                     }
-                    myAdapter.notifyItemMoved(fromPosition, toPosition);
-*/
+                    //myAdapter.notifyItemMoved(fromPosition, toPosition);
                     return true;
                 }
 
@@ -117,9 +140,8 @@ public class ItemFragment extends Fragment {
                     viewHolder.itemView.setBackgroundColor(0);
                 }
             });
-            mItemTouchHelper.attachToRecyclerView(recyclerView);
-
-
+ */
+//            mItemTouchHelper.attachToRecyclerView(recyclerView);
         }
         return view;
     }

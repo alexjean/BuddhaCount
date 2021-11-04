@@ -1,8 +1,10 @@
 package com.tomorrow_eyes.buddhacount;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -10,7 +12,6 @@ import android.widget.TextView;
 import com.tomorrow_eyes.buddhacount.ItemContent.CountItem;
 import com.tomorrow_eyes.buddhacount.databinding.FragmentItemBinding;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -23,12 +24,22 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         mValues = items;
     }
 
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        return new ViewHolder(FragmentItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
-
+    @NonNull @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        FragmentItemBinding binding = FragmentItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        View view = binding.getRoot();
+        ViewHolder viewHolder = new ViewHolder(binding);
+        view.setOnLongClickListener(v -> {
+            int position = viewHolder.getLayoutPosition();
+            //String msg = "Item<" + String.valueOf(position) + "> long Clicked!";
+            //Snackbar.make(view, msg, Snackbar.LENGTH_SHORT).show();
+            if (longClickListener != null)
+                longClickListener.onRecyclerViewItemLongClick(position, view);
+            return true;
+        });
+        return viewHolder;
     }
+
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
@@ -40,8 +51,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mIdView.setText(str);
         holder.mContentView.setText(item.content);
         str = String.valueOf(item.count);
-        // l1 = str.length();
-        // if (l1 < 6)  str = "      ".substring(l1) + str;
         holder.mCountView.setText(str);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
         holder.mMarkView.setText(item.mark.format(formatter));
@@ -67,9 +76,20 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mMarkView = binding.mark;
         }
 
-        @Override
+        @NonNull @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
         }
     }
+
+    public interface OnRecyclerViewItemLongClickListener {
+        void onRecyclerViewItemLongClick(int position, View view);
+    }
+
+    private OnRecyclerViewItemLongClickListener longClickListener;
+    public void setOnRecyclerViewItemLongClickListener(OnRecyclerViewItemLongClickListener longClickListener) {
+        this.longClickListener = longClickListener;
+    }
+
+
 }

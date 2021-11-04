@@ -29,11 +29,11 @@ import java.util.List;
 
 public class RecordFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+//    private static final String ARG_PARAM1 = "param1";
+//    private static final String ARG_PARAM2 = "param2";
 
-    private String mParam1;
-    private String mParam2;
+//    private String mParam1;
+//    private String mParam2;
 
     private FragmentRecordBinding binding;
     private MyViewModel viewModel;
@@ -42,12 +42,11 @@ public class RecordFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     public static RecordFragment newInstance(String param1, String param2) {
         RecordFragment fragment = new RecordFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        //args.putString(ARG_PARAM1, param1);
+        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +55,8 @@ public class RecordFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            //mParam1 = getArguments().getString(ARG_PARAM1);
+            //mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -129,7 +128,9 @@ public class RecordFragment extends Fragment {
         if (!(fragment instanceof ItemFragment)) return;
         RecyclerView recyclerView = (RecyclerView) fragment.getView();
         assert recyclerView != null;
-        recyclerView.setAdapter(new MyItemRecyclerViewAdapter(ItemContent.ITEMS));
+        //recyclerView.setAdapter(new MyItemRecyclerViewAdapter(ItemContent.ITEMS));
+        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        if (adapter != null) adapter.notifyDataSetChanged();
         ItemContent.writeToFile(mContext);
     }
 
