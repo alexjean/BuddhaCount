@@ -3,8 +3,11 @@ package com.tomorrow_eyes.buddhacount;
 import static androidx.recyclerview.widget.ItemTouchHelper.*;
 
 import android.app.AlertDialog;
+import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,9 +19,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -71,14 +78,28 @@ public class RecordFragment extends Fragment {
         return binding.getRoot();
     }
 
+    public void SnackbarWarning(View view, String msg , boolean warning) {
+        Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_SHORT);
+        View view2 = snackbar.getView();
+        TextView tv = view2.findViewById(com.google.android.material.R.id.snackbar_text);
+        tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbar.show();
+        if (warning) {
+            Vibrator vibrator = (Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE);
+            vibrator.vibrate(VibrationEffect.createOneShot(350, 200));
+        }
+    }
 
-    public void areYouOk(DialogInterface.OnClickListener onClickListener) {
-        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(getContext());
-        dlgAlert.setMessage("確定要重置計數嗎？");
-        dlgAlert.setTitle("記錄後重置");
-        dlgAlert.setCancelable(true);
-        dlgAlert.setPositiveButton("OK", onClickListener);
-        dlgAlert.create().show();
+    public void areYouOk(int gravity, String msg, DialogInterface.OnClickListener onClickListener) {
+        AlertDialog.Builder builder  = new AlertDialog.Builder(getContext());
+        builder.setMessage(msg);
+        builder.setTitle(R.string.button_reset);
+        builder.setCancelable(true);
+        builder.setPositiveButton(R.string.confirm_text, onClickListener);
+        builder.setNegativeButton(R.string.cancel_text, null);
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setGravity(gravity);
+        dialog.show();
     }
 
     private Context mContext;
@@ -100,22 +121,35 @@ public class RecordFragment extends Fragment {
                 viewModel.setTitle(content);
                 viewModel.writeConfig(mContext);
             }
-            if (viewModel.getCount() == 0) {
-                Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_SHORT);
-                View view2 = snackbar.getView();
-                TextView tv = view2.findViewById(com.google.android.material.R.id.snackbar_text);
-                tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                snackbar.show();
-            }
+            if (viewModel.getCount() == 0)
+                SnackbarWarning(view, msg, true);
             else
-                areYouOk((dialog, which) -> recordCountAdjustStatistic());
+                areYouOk(Gravity.CENTER, "確定要置頂清零嗎?", (dlg, which) -> {
+                    if (ItemContent.sizeOver()) {
+                        RecyclerView recyclerView = getSubRecyclerView();
+                        if (recyclerView != null)
+                            recyclerView.scrollToPosition(ItemContent.ITEMS.size()-1);
+                        areYouOk(Gravity.BOTTOM, "列表己超長,最後二筆將合併", (dlg1, which1) -> {
+                            recordCountAdjustStatistic();
+                            recyclerView.scrollToPosition(0);
+                        });
+                    }
+                    else
+                        recordCountAdjustStatistic();
+                });
         });
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        attachItemTouchHelper();  // 在onViewCreated呼叫,recyclerView還是null
+        RecyclerView recyclerView = getSubRecyclerView();
+        if (recyclerView == null) return;
+        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        if (adapter == null) return;
+        if (adapter instanceof MyItemRecyclerViewAdapter)
+            attachRecyclerViewItemLongClick((MyItemRecyclerViewAdapter) adapter);
+        attachItemTouchHelper(recyclerView, adapter);  // 在onViewCreated呼叫,recyclerView還是null
     }
 
     private RecyclerView getSubRecyclerView() {
@@ -134,24 +168,21 @@ public class RecordFragment extends Fragment {
     public void recordCountAdjustStatistic() {
         String content = viewModel.getTitle();
         ItemContent.insertItemUpdateList(new CountItem("0", content,
-                viewModel.getCount(), LocalDate.now()));
+                viewModel.getCount(), viewModel.getMark()));
         viewModel.setCount(0);
+        viewModel.setMark(LocalDate.now());
         binding.textViewCount.setText(viewModel.getCountString());
         viewModel.writeCountToFile(mContext);
         RecyclerView recyclerView = getSubRecyclerView();
         if (recyclerView == null) return;
-        //recyclerView.setAdapter(new MyItemRecyclerViewAdapter(ItemContent.ITEMS));
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
         if (adapter != null) adapter.notifyDataSetChanged();
         ItemContent.writeToFile(mContext);
+        SnackbarWarning(binding.getRoot(), "己置頂", false);
     }
 
-    public void attachItemTouchHelper()
+    public void attachItemTouchHelper(RecyclerView recyclerView, RecyclerView.Adapter adapter)
     {
-        RecyclerView recyclerView = getSubRecyclerView();
-        if (recyclerView == null) return;
-        RecyclerView.Adapter adapter = recyclerView.getAdapter();
-        if (adapter == null) return;
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new Callback() {
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
@@ -162,7 +193,7 @@ public class RecordFragment extends Fragment {
                     return makeMovementFlags(dragFlags, swipeFlags);
                 } else {
                     final int dragFlags = UP | DOWN;
-                    final int swipeFlags = START;
+                    final int swipeFlags = START | END;
                     return makeMovementFlags(dragFlags, swipeFlags);
                 }
             }
@@ -176,10 +207,32 @@ public class RecordFragment extends Fragment {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAbsoluteAdapterPosition();
                 CountItem item = ItemContent.ITEMS.get(position);
-                String content = viewModel.getTitle();
-                int count = viewModel.getCount();
-                LocalDate mark = viewModel.getMark();
-                CountItem item1 = new CountItem(item.id, content, count, mark);
+                AlertDialog.Builder dlg  = new AlertDialog.Builder(mContext);
+                String title = item.content;
+                if (title.length() > 7) title= title.substring(0, 7)+"..";
+                dlg.setMessage(String.format("<%s> %s   %d",item.id, title, item.count));
+                dlg.setTitle("確定要刪除");
+                dlg.setCancelable(true);
+                dlg.setPositiveButton(R.string.confirm_text, (dialog, which) -> {
+                    ItemContent.ITEMS.remove(position);
+                    ItemContent.writeToFile(mContext);
+                    adapter.notifyItemRemoved(position);
+                });
+                dlg.setNegativeButton(R.string.cancel_text, null);
+                dlg.setOnDismissListener((dialog1)->adapter.notifyItemChanged(position));
+                dlg.create().show();
+/*
+                if (viewModel.getCount() == 0)
+                {
+                    String msg = String.format("前台計數為 0, 記錄<%s>無法互換!", item.id);
+                    Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
+                    Vibrator vibrator= (Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE);
+                    vibrator.vibrate(VibrationEffect.createOneShot(350, 200));
+                    adapter.notifyItemChanged(position);
+                    return;
+                }
+                CountItem item1 = new CountItem(item.id, viewModel.getTitle(),
+                                    viewModel.getCount(), viewModel.getMark());
                 viewModel.setTitle(item.content);
                 viewModel.setCount(item.count);
                 viewModel.setMark(item.mark);
@@ -187,12 +240,12 @@ public class RecordFragment extends Fragment {
                 binding.editTextTitle.setText(viewModel.getTitle());
                 ItemContent.ITEMS.set(position, item1);
                 adapter.notifyItemChanged(position);
-                Context context = getContext();
-                viewModel.writeConfig(context);
-                viewModel.writeCountToFile(context);
-                ItemContent.writeToFile(context);
+                viewModel.writeConfig(mContext);
+                viewModel.writeCountToFile(mContext);
+                ItemContent.writeToFile(mContext);
                 String msg = String.format("編號<%s>己和前台互換!", item.id);
                 Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
+ */
             }
 
             @Override
@@ -203,6 +256,47 @@ public class RecordFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
     }
+
+    public void attachRecyclerViewItemLongClick(MyItemRecyclerViewAdapter adapter) {
+        adapter.setOnRecyclerViewItemLongClickListener((position, itemView) -> {
+            CountItem countItem = ItemContent.ITEMS.get(position);
+            Drawable background = itemView.getBackground();
+            itemView.setBackgroundColor(Color.LTGRAY);
+            PopupMenu popupMenu = new PopupMenu(mContext, itemView);
+            popupMenu.getMenuInflater().inflate(R.menu.menu_popup, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.popup_copy_title) {
+                    viewModel.setTitle(countItem.content);
+                    binding.editTextTitle.setText(viewModel.getTitle());
+                    viewModel.writeConfig(mContext);
+                    return true;
+                } else if (item.getItemId() == R.id.popup_bring_front) {
+                    if (viewModel.getCount() != 0)
+                    {
+                        SnackbarWarning(binding.getRoot(), "前台計數不是0 ,無法取出記錄", true);
+                        return false;
+                    }
+                    viewModel.setTitle(countItem.content);
+                    viewModel.setCount(countItem.count);
+                    viewModel.setMark(countItem.mark);
+                    binding.editTextTitle.setText(viewModel.getTitle());
+                    binding.textViewCount.setText(viewModel.getCountString());
+                    viewModel.writeConfig(mContext);
+                    viewModel.writeCountToFile(mContext);
+                    ItemContent.ITEMS.remove(position);
+                    ItemContent.writeToFile(mContext);
+                    adapter.notifyItemRemoved(position);
+                    return true;
+                }
+                return false;
+            });
+            popupMenu.setOnDismissListener(menu -> itemView.setBackground(background));
+            Vibrator vibrator = (Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE);
+            popupMenu.show();
+            vibrator.vibrate(VibrationEffect.createOneShot(150, 200));
+        });
+    }
+
 
 
 }

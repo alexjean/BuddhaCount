@@ -33,7 +33,7 @@ public class ItemContent {
      */
     //public static final Map<String, CountItem> ITEM_MAP = new HashMap<>();
 
-    private static final int COUNT = 9;
+    private static final int MaxCOUNT = 10;
 
     static {
         initList();
@@ -41,7 +41,7 @@ public class ItemContent {
 
     public static void initList() {
         ITEMS.clear();
-        addItem(new CountItem("-", "記錄外總計：", 0, LocalDate.now()));
+        //addItem(new CountItem("-", "記錄外總計：", 0, LocalDate.now()));
     }
 
 /*
@@ -50,7 +50,7 @@ public class ItemContent {
         LocalDateTime temp = LocalDateTime.now();
         int count = 0;
         LocalDate localDate;
-        for (int i = 1; i <= COUNT; i++) {
+        for (int i = 1; i < MaxCOUNT; i++) {
             count = random.nextInt(100000);
             temp=temp.minus(count+random.nextInt(1000000), ChronoUnit.SECONDS);
             localDate = LocalDate.of(temp.getYear(), temp.getMonth(), temp.getDayOfMonth());
@@ -68,14 +68,27 @@ public class ItemContent {
         // ITEM_MAP.put(item.id, item);
     }
 
+    public static boolean sizeOver()
+    {
+        return ITEMS.size() >= MaxCOUNT;
+    }
+
     public static void insertItemUpdateList(CountItem item) {
-        int len = ITEMS.size();
-        if (len > COUNT) {   // 己超長,合併最後記錄
+        if (sizeOver()) {   // 己超長,合併最後記錄
+            int len = ITEMS.size();
             CountItem item2 = ITEMS.get(len - 2);
             CountItem item1 = ITEMS.get(len - 1);
             String content = "列表外總計：";
             if (item2.content.equals(item1.content))
                 content = item1.content;
+            else
+            {
+                if (item2.count > item1.count)
+                    content = item2.content;
+                else content = item1.content;
+                if (content.length() > 7) content= content.substring(0, 7);
+                content += "..";
+            }
             ITEMS.remove(len - 1);
             ITEMS.remove(len - 2);
             addItem(new CountItem(item1.id, content ,
@@ -130,8 +143,8 @@ public class ItemContent {
             for(int i=1;(line = reader.readLine()) != null; i++) {
                 addItem(i, line);
             }
-            if (ITEMS.size() == 0) initList();
-            ITEMS.get(ITEMS.size()-1).setId("-");  // 最後統計不想是10
+            if (ITEMS.size() > 0)
+                ITEMS.get(ITEMS.size()-1).setId("-");  // 最後統計
             in.close();
             stream.close();
          } catch (IOException e) {

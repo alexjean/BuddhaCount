@@ -61,28 +61,6 @@ public class ItemFragment extends Fragment {
             }
             MyItemRecyclerViewAdapter adapter = new MyItemRecyclerViewAdapter(ItemContent.ITEMS);
             recyclerView.setAdapter(adapter);
-
-            // LongClickListener for 刪除
-            adapter.setOnRecyclerViewItemLongClickListener((position, itemView) -> {
-                Drawable background=itemView.getBackground();
-                itemView.setBackgroundColor(Color.LTGRAY);
-                PopupMenu popupMenu = new PopupMenu(context,itemView);
-                popupMenu.getMenuInflater().inflate(R.menu.menu_popup,popupMenu.getMenu());
-                popupMenu.setOnMenuItemClickListener(item -> {
-                    if(item.getItemId()==R.id.popup_delete) {
-                        ItemContent.ITEMS.remove(position);
-                        ItemContent.writeToFile(context);
-                        adapter.notifyItemRemoved(position);
-                        return true;
-                    }
-                    return false;
-                });
-                popupMenu.setOnDismissListener(menu -> itemView.setBackground(background));
-                Vibrator vibrator = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
-                popupMenu.show();
-                vibrator.vibrate(VibrationEffect.createOneShot(150,200));
-            });
-
         }
         return view;
     }
