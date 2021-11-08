@@ -34,14 +34,15 @@ import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 public class RecordFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+//    private static final String ARG_PARAM1 = "param1";
+//    private static final String ARG_PARAM2 = "param2";
 
-    private String mParam1;
-    private String mParam2;
+//    private String mParam1;
+//    private String mParam2;
 
     private FragmentRecordBinding binding;
     private MyViewModel viewModel;
@@ -50,7 +51,8 @@ public class RecordFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static RecordFragment newInstance(String param1, String param2) {
+    public static RecordFragment newInstance() {
+//        String param1, String param2) {
         RecordFragment fragment = new RecordFragment();
         Bundle args = new Bundle();
         //args.putString(ARG_PARAM1, param1);
@@ -62,14 +64,14 @@ public class RecordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+//        if (getArguments() != null) {
+//            mParam1 = getArguments().getString(ARG_PARAM1);
+//            mParam2 = getArguments().getString(ARG_PARAM2);
+//        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment_record, container, false);
@@ -161,8 +163,7 @@ public class RecordFragment extends Fragment {
         if (list.isEmpty()) return null;
         Fragment fragment = list.get(0);
         if (!(fragment instanceof ItemFragment)) return null;
-        RecyclerView recyclerView = (RecyclerView) fragment.getView();
-        return recyclerView;
+        return (RecyclerView) fragment.getView();
     }
 
     public void recordCountAdjustStatistic() {
