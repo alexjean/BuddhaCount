@@ -5,7 +5,7 @@ plugins {
 android {
     signingConfigs {
         release {
-            storeFile file('C:\\Users\\alexj\\GoogePlayKey.jks')
+            storeFile file('$Home/GoogePlayKey.jks')
             storePassword 'loveAlex'
             keyPassword 'loveAlex'
             keyAlias 'tomorrow eyes'
@@ -17,8 +17,8 @@ android {
         applicationId "com.tomorrow_eyes.buddhacount"
         minSdk 26
         targetSdk 30
-        versionCode 5
-        versionName '1.03'
+        versionCode 6
+        versionName '1.04'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
