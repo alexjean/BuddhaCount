@@ -1,6 +1,12 @@
 package com.tomorrow_eyes.buddhacount;
 
-import static androidx.recyclerview.widget.ItemTouchHelper.*;
+import static androidx.recyclerview.widget.ItemTouchHelper.Callback;
+import static androidx.recyclerview.widget.ItemTouchHelper.DOWN;
+import static androidx.recyclerview.widget.ItemTouchHelper.END;
+import static androidx.recyclerview.widget.ItemTouchHelper.LEFT;
+import static androidx.recyclerview.widget.ItemTouchHelper.RIGHT;
+import static androidx.recyclerview.widget.ItemTouchHelper.START;
+import static androidx.recyclerview.widget.ItemTouchHelper.UP;
 
 import android.app.AlertDialog;
 import android.app.Service;
@@ -9,6 +15,14 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,22 +33,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.VibrationEffect;
-import android.os.Vibrator;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.PopupMenu;
-import android.widget.TextView;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.tomorrow_eyes.buddhacount.ItemContent.CountItem;
 import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 
 public class RecordFragment extends Fragment {
 

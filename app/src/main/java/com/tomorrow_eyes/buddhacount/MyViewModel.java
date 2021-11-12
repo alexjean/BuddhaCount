@@ -1,5 +1,6 @@
 package com.tomorrow_eyes.buddhacount;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -10,6 +11,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -95,7 +97,7 @@ public class MyViewModel extends ViewModel {
         try {
             FileInputStream stream = new FileInputStream(fileName);
             InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
-            BufferedReader bufferedReader = new BufferedReader(reader,256);
+            BufferedReader bufferedReader = new BufferedReader(reader, 256);
             String line = bufferedReader.readLine();
             try {
                 String[] split = line.split(",");
@@ -105,11 +107,13 @@ public class MyViewModel extends ViewModel {
                     date1 = LocalDate.parse(split[1].trim(), formatter);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.d("ReadCountFromFile:", "Error between line parse!");
             }
             bufferedReader.close();
+        } catch (FileNotFoundException fe) {
+            Log.d("ReadCountFromFile:", "File not found!");
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d("ReadCountFromFile: ","File read error!");
         }
         setCount(count1);
         setMark(date1);

@@ -1,7 +1,6 @@
 package com.tomorrow_eyes.buddhacount;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -19,8 +18,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.tomorrow_eyes.buddhacount.databinding.FragmentKsitigarbhaBinding;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class KsitigarbhaFragment extends Fragment {
