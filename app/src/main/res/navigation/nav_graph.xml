@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/recordFragment"
         android:name="com.tomorrow_eyes.buddhacount.RecordFragment"
-        android:label="記錄"
+        android:label="@string/action_record"
         tools:layout="@layout/fragment_record" >
         <action
             android:id="@+id/action_recordFragment_to_FirstFragment"

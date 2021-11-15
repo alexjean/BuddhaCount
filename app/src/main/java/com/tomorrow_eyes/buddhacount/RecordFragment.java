@@ -112,30 +112,30 @@ public class RecordFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.textViewCount.setText(viewModel.getCountString());
-        binding.editTextTitle.setText(viewModel.getTitle());
         ItemContent.readFromFile(mContext=getContext());
+        binding.textViewCount.setText(viewModel.getCountString());
+        binding.editTextTitle.setText(viewModel.getTitle(mContext));
 
         binding.buttonReset.setOnClickListener(view1 -> {
             String content = binding.editTextTitle.getText().toString();
             content=content.replace(",","");  // 不准有逗号
             content=content.replace("\n", " ").trim();
             binding.editTextTitle.setText(content);
-            String msg = "計數為0, 不入上方列表";
-            if (!content.equals(viewModel.getTitle())) {
-                msg = "抬頭設為 "+content;
+            String msg = getString(R.string.msg_count_is_zero);
+            if (!content.equals(viewModel.getTitle(mContext))) {
+                msg = getString(R.string.msg_settting_title)+content;
                 viewModel.setTitle(content);
                 viewModel.writeConfig(mContext);
             }
             if (viewModel.getCount() == 0)
                 SnackbarWarning(view, msg, true);
             else
-                areYouOk(Gravity.CENTER, "確定要置頂清零嗎?", (dlg, which) -> {
+                areYouOk(Gravity.CENTER, getString(R.string.msg_sure_to_record_than_reset), (dlg, which) -> {
                     if (ItemContent.sizeOver()) {
                         RecyclerView recyclerView = getSubRecyclerView();
                         if (recyclerView != null)
                             recyclerView.scrollToPosition(ItemContent.ITEMS.size()-1);
-                        areYouOk(Gravity.BOTTOM, "列表己超長,最後二筆將合併", (dlg1, which1) -> {
+                        areYouOk(Gravity.BOTTOM, getString(R.string.msg_list_too_long_will_merge), (dlg1, which1) -> {
                             recordCountAdjustStatistic();
                             recyclerView.scrollToPosition(0);
                         });
@@ -171,7 +171,7 @@ public class RecordFragment extends Fragment {
     }
 
     public void recordCountAdjustStatistic() {
-        String content = viewModel.getTitle();
+        String content = viewModel.getTitle(mContext);
         ItemContent.insertItemUpdateList(new CountItem("0", content,
                 viewModel.getCount(), viewModel.getMark()));
         viewModel.setCount(0);
@@ -183,7 +183,7 @@ public class RecordFragment extends Fragment {
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
         if (adapter != null) adapter.notifyDataSetChanged();
         ItemContent.writeToFile(mContext);
-        SnackbarWarning(binding.getRoot(), "己置頂", false);
+        SnackbarWarning(binding.getRoot(), getString(R.string.msg_already_on_top), false);
     }
 
     public void attachItemTouchHelper(RecyclerView recyclerView, RecyclerView.Adapter adapter)
@@ -216,7 +216,7 @@ public class RecordFragment extends Fragment {
                 String title = item.content;
                 if (title.length() > 7) title= title.substring(0, 7)+"..";
                 dlg.setMessage(String.format("<%s> %s   %d",item.id, title, item.count));
-                dlg.setTitle("確定要刪除");
+                dlg.setTitle(R.string.confirm_delete);
                 dlg.setCancelable(true);
                 dlg.setPositiveButton(R.string.confirm_text, (dialog, which) -> {
                     ItemContent.ITEMS.remove(position);
@@ -272,19 +272,19 @@ public class RecordFragment extends Fragment {
             popupMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.popup_copy_title) {
                     viewModel.setTitle(countItem.content);
-                    binding.editTextTitle.setText(viewModel.getTitle());
+                    binding.editTextTitle.setText(viewModel.getTitle(mContext));
                     viewModel.writeConfig(mContext);
                     return true;
                 } else if (item.getItemId() == R.id.popup_bring_front) {
                     if (viewModel.getCount() != 0)
                     {
-                        SnackbarWarning(binding.getRoot(), "前台計數不是0 ,無法取出記錄", true);
+                        SnackbarWarning(binding.getRoot(), getString(R.string.msg_count_number_not_zero), true);
                         return false;
                     }
                     viewModel.setTitle(countItem.content);
                     viewModel.setCount(countItem.count);
                     viewModel.setMark(countItem.mark);
-                    binding.editTextTitle.setText(viewModel.getTitle());
+                    binding.editTextTitle.setText(viewModel.getTitle(mContext));
                     binding.textViewCount.setText(viewModel.getCountString());
                     viewModel.writeConfig(mContext);
                     viewModel.writeCountToFile(mContext);

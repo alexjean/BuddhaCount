@@ -1,24 +1,32 @@
 <resources>
     <string name="app_name">唸佛計數</string>
-    <string name="action_settings">記錄</string>
+    <string name="action_record">記錄</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">南無地藏菩薩</string>
     <string name="next">Next</string>
     <string name="ksitigarbha">南無地藏菩薩</string>
 
-    <string name="filename_count">count.dat</string>
-    <string name="filename_list">list.dat</string>
+    <string name="filename_count" translatable="false">count.dat</string>
+    <string name="filename_list" translatable="false">list.dat</string>
     <string name="end">結束</string>
     <string name="fragment_item_label">記錄</string>
     <string name="wood_fish">木魚聲</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="button_reset">存檔 清零</string>
-    <string name="filename_config">config.json</string>
+    <string name="filename_config" translatable="false">config.json</string>
     <string name="lucky_number">8888</string>
     <string name="menu_copy_title">拷貝抬頭</string>
     <string name="menu_bring_front">取出記錄</string>
     <string name="confirm_text">確定</string>
     <string name="cancel_text">不要</string>
+    <string name="amitabha">南無阿隬陀佛</string>
+    <string name="confirm_delete">確定要刪除</string>
+    <string name="msg_count_is_zero">計數為0, 不入上方列表</string>
+    <string name="msg_settting_title">\"抬頭設為 \"</string>
+    <string name="msg_sure_to_record_than_reset">確定要置頂清零嗎?</string>
+    <string name="msg_list_too_long_will_merge">列表己超長,最後二筆將合併</string>
+    <string name="msg_already_on_top">己置頂</string>
+    <string name="msg_count_number_not_zero">前台計數不是0 ,無法取出記錄</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

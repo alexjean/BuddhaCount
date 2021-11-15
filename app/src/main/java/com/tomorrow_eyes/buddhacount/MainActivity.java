@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) actionBar.setTitle(viewModel.getTitle());
+        if (actionBar != null) actionBar.setTitle(viewModel.getTitle(this));
     }
 
     @Override

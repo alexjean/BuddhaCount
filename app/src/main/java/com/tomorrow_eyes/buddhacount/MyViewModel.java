@@ -119,10 +119,10 @@ public class MyViewModel extends ViewModel {
         setMark(date1);
      }
 
-    public String getTitle() {
+    public String getTitle(Context context) {
         if (title == null) {
             title = new MediatorLiveData<>();
-            title.setValue("南無阿隬陀佛");
+            title.setValue(context.getString(R.string.amitabha));
         }
         return title.getValue();
     }
@@ -156,7 +156,7 @@ public class MyViewModel extends ViewModel {
                 context.getString(R.string.filename_config);
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("Title", getTitle());
+            jsonObject.put("Title", getTitle(context));
             jsonObject.put("SoundSwitch", getWoodenKnocker());
 
             byte[] buf = jsonObject.toString().getBytes(StandardCharsets.UTF_8);
