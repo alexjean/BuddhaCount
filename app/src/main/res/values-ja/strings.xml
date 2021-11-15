@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">仏陀を数える</string>
+    <string name="action_record">記録</string>
+    <string name="first_fragment_label">ナモ地蔵菩薩</string>
+    <string name="next">次へ</string>
+    <string name="ksitigarbha">ナモ地蔵菩薩</string>
+    <string name="end">終了</string>
+    <string name="fragment_item_label">記録</string>
+    <string name="wood_fish">もくぎょの音</string>
+    <string name="button_reset">保存してリセット</string>
+    <string name="menu_copy_title">タイトルをコピー</string>
+    <string name="menu_bring_front">レコードを取得</string>
+    <string name="confirm_text">確認</string>
+    <string name="cancel_text">キャンセル</string>
+    <string name="amitabha">ナモ阿弥陀如来</string>
+    <string name="confirm_delete">削除の確認</string>
+    <string name="msg_count_is_zero">カウントがゼロです。リストに追加されません！</string>
+    <string name="msg_settting_title">ヘッダーはに設定されています</string>
+    <string name="msg_sure_to_record_than_reset">保存してリセットしてもよろしいですか？</string>
+    <string name="msg_list_too_long_will_merge">リストが長すぎるため、最後の2行がマージされます</string>
+    <string name="msg_already_on_top">が保存されました</string>
+    <string name="msg_count_number_not_zero">前景の数が0ではなく、レコードを取得できません</string>
+</resources>

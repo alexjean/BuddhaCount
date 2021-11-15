@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">นับพระพุทธเจ้า</string>
+    <string name="action_record">บันทึก</string>
+    <string name="first_fragment_label">หนานอู๋จีจางโพธิสัตว์</string>
+    <string name="next">ถัดไป</string>
+    <string name="ksitigarbha">นัน วู จี ซัง พระโพธิสัตว์</string>
+    <string name="end">จบ</string>
+    <string name="fragment_item_label">เรกคอร์ด</string>
+    <string name="wood_fish">เสียงปลาไม้</string>
+    <string name="button_reset">รีเซ็ตไฟล์เก็บถาวร</string>
+    <string name="menu_copy_title">คัดลอกส่วนหัว</string>
+    <string name="menu_bring_front">เรียกข้อมูลระเบียน</string>
+    <string name="confirm_text">ตกลง</string>
+    <string name="cancel_text">อย่า</string>
+    <string name="amitabha">นันวู อนันตพุทธะ</string>
+    <string name="confirm_delete">คุณแน่ใจหรือไม่ว่าต้องการลบ</string>
+    <string name="msg_count_is_zero">จำนวนเป็นศูนย์ จะไม่ถูกเพิ่มในรายการ!</string>
+    <string name="msg_settting_title">ตั้งค่าส่วนหัวเป็น</string>
+    <string name="msg_sure_to_record_than_reset">คุณแน่ใจหรือไม่ว่าต้องการบันทึกและรีเซ็ต</string>
+    <string name="msg_list_too_long_will_merge">รายการยาวเกินไปและสองบรรทัดสุดท้ายจะถูกรวมเข้าด้วยกัน</string>
+    <string name="msg_already_on_top">บันทึกแล้ว</string>
+    <string name="msg_count_number_not_zero">จำนวนเบื้องหน้าไม่ใช่ 0 ไม่สามารถดึงข้อมูลระเบียนได้</string>
+</resources>

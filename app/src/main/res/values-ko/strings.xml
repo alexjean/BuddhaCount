@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">부처를 세다</string>
+    <string name="action_record">레코드</string>
+    <string name="next">다음</string>
+    <string name="first_fragment_label">난우지장 보살</string>
+    <string name="ksitigarbha">난무지장보살</string>
+    <string name="end">끝</string>
+    <string name="fragment_item_label">레코드</string>
+    <string name="wood_fish">목제 물고기 소리</string>
+    <string name="button_reset">아카이브 재설정</string>
+    <string name="menu_copy_title">헤더 복사</string>
+    <string name="menu_bring_front">기록 검색</string>
+    <string name="confirm_text">확인</string>
+    <string name="cancel_text">안함</string>
+    <string name="amitabha">난우 아윤다 부처</string>
+    <string name="confirm_delete">정말 삭제하시겠습니까</string>
+    <string name="msg_count_is_zero">카운트가 0이며 목록에 추가되지 않습니다!</string>
+    <string name="msg_settting_title">헤더가 다음으로 설정됨</string>
+    <string name="msg_sure_to_record_than_reset">저장하고 재설정하시겠습니까?</string>
+    <string name="msg_list_too_long_will_merge">목록이 너무 길어 마지막 두 줄이 병합됩니다.</string>
+    <string name="msg_already_on_top">상단에 저장됨</string>
+    <string name="msg_count_number_not_zero">포그라운드 카운트가 0이 아니어서 레코드를 가져올 수 없습니다.</string>
+</resources>

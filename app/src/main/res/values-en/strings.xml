@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Buddha Count</string>
+    <string name="app_name">Buddha Counter</string>
     <string name="action_record">Record</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">Namo Ksitigarbha</string>
@@ -11,19 +11,18 @@
     <string name="wood_fish">Wooden knocker</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="button_reset">Save Reset</string>
-    <string name="lucky_number">8888</string>
     <string name="menu_copy_title">Copy title</string>
-    <string name="menu_bring_front">Bring record to front</string>
+    <string name="menu_bring_front">Fetch record</string>
     <string name="confirm_text">Confirm</string>
     <string name="cancel_text">Cancel</string>
     <string name="amitabha">Namo Amitabha</string>
     <string name="confirm_delete">Confirm to delete</string>
-    <string name="msg_count_is_zero">Count is zero , would not be put into list!</string>
+    <string name="msg_count_is_zero">Counter is zero , would not be put into list!</string>
     <string name="msg_settting_title">Set title to</string>
-    <string name="msg_sure_to_record_than_reset">Are you sure to save than reset count</string>
-    <string name="msg_list_too_long_will_merge">List too long! The bottom 2 raws will be merged</string>
+    <string name="msg_sure_to_record_than_reset">Are you sure to save then reset counter</string>
+    <string name="msg_list_too_long_will_merge">List too long! The bottom 2 lines will be merged</string>
     <string name="msg_already_on_top">Put the record on top of list</string>
-    <string name="msg_count_number_not_zero">Cannot override nonzero count value</string>
+    <string name="msg_count_number_not_zero">Cannot override nonzero counter</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>
