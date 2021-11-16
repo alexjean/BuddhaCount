@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.tomorrow_eyes.buddhacount.databinding.FragmentKsitigarbhaBinding;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 public class KsitigarbhaFragment extends Fragment {
 
@@ -68,6 +69,7 @@ public class KsitigarbhaFragment extends Fragment {
             }
             viewModel.addCount();
             binding.textviewFirst.setText(Integer.toString(viewModel.getCount()));
+            viewModel.setMark(LocalDate.now());
             viewModel.writeCountToFile(getContext());;
             return true;  // true 不處理OnClick
         });

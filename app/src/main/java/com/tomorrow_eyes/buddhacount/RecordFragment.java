@@ -123,7 +123,7 @@ public class RecordFragment extends Fragment {
             binding.editTextTitle.setText(content);
             String msg = getString(R.string.msg_count_is_zero);
             if (!content.equals(viewModel.getTitle(mContext))) {
-                msg = getString(R.string.msg_settting_title)+content;
+                msg = getString(R.string.msg_settting_title)+" "+content;
                 viewModel.setTitle(content);
                 viewModel.writeConfig(mContext);
             }

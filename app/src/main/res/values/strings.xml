@@ -11,7 +11,6 @@
     <string name="end">End</string>
     <string name="fragment_item_label">Record</string>
     <string name="wood_fish">Wooden knocker</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="button_reset">Save Reset</string>
     <string name="filename_config" translatable="false">config.json</string>
     <string name="lucky_number" translatable="false">8888</string>
@@ -27,6 +26,5 @@
     <string name="msg_list_too_long_will_merge">List too long! The bottom 2 lines will be merged</string>
     <string name="msg_already_on_top">Put the record on top of list</string>
     <string name="msg_count_number_not_zero">Cannot override nonzero counter</string>
-    <!-- TODO: Remove or change this placeholder text -->
 
 </resources>
