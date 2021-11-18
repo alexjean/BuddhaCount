@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">唸佛計數</string>
+    <string name="app_name">數佛</string>
     <string name="action_record">記錄</string>
     <string name="first_fragment_label">南無地藏菩薩</string>
     <string name="next">Next</string>
@@ -13,7 +13,7 @@
     <string name="menu_bring_front">取出記錄</string>
     <string name="confirm_text">確定</string>
     <string name="cancel_text">不要</string>
-    <string name="amitabha">南無阿隬陀佛</string>
+    <string name="amitabha">南無阿彌陀佛</string>
     <string name="confirm_delete">確定要刪除</string>
     <string name="msg_count_is_zero">計數為0, 不入上方列表</string>
     <string name="msg_settting_title">\"抬頭設為 \"</string>

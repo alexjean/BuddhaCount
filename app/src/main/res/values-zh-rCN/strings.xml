@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">唸佛計數</string>
-    <string name="action_record">記錄</string>
-    <string name="first_fragment_label">南無地藏菩薩</string>
+    <string name="app_name">数佛</string>
+    <string name="action_record">记录</string>
+    <string name="first_fragment_label">南无地藏菩萨</string>
     <string name="next">Next</string>
-    <string name="ksitigarbha">南無地藏菩薩</string>
-    <string name="end">結束</string>
-    <string name="fragment_item_label">記錄</string>
-    <string name="wood_fish">木魚聲</string>
-    <string name="button_reset">存檔 清零</string>
-    <string name="menu_copy_title">拷貝抬頭</string>
-    <string name="menu_bring_front">取出記錄</string>
-    <string name="confirm_text">確定</string>
+    <string name="ksitigarbha">南无地藏菩萨</string>
+    <string name="end">结束</string>
+    <string name="fragment_item_label">记录</string>
+    <string name="wood_fish">木鱼声</string>
+    <string name="button_reset">存档 清零</string>
+    <string name="menu_copy_title">拷贝抬头</string>
+    <string name="menu_bring_front">取出记录</string>
+    <string name="confirm_text">确定</string>
     <string name="cancel_text">不要</string>
-    <string name="amitabha">南無阿隬陀佛</string>
-    <string name="confirm_delete">確定要刪除</string>
-    <string name="msg_count_is_zero">計數為0, 不入上方列表</string>
-    <string name="msg_settting_title">\"抬頭設為 \"</string>
-    <string name="msg_sure_to_record_than_reset">確定要置頂清零嗎?</string>
-    <string name="msg_list_too_long_will_merge">列表己超長,最後二行將合併</string>
-    <string name="msg_already_on_top">己儲存置頂</string>
-    <string name="msg_count_number_not_zero">前台計數不是0 ,無法取出記錄</string>
+    <string name="amitabha">南无阿弥陀佛</string>
+    <string name="confirm_delete">确定要删除</string>
+    <string name="msg_count_is_zero">计数为0, 不入上方列表</string>
+    <string name="msg_settting_title">\"抬头设为 \"</string>
+    <string name="msg_sure_to_record_than_reset">确定要置顶清零吗?</string>
+    <string name="msg_list_too_long_will_merge">列表己超长,最后二行将合并</string>
+    <string name="msg_already_on_top">己储存置顶</string>
+    <string name="msg_count_number_not_zero">前台计数不是0 ,无法取出记录</string>
 </resources>

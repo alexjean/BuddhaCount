@@ -70,7 +70,7 @@ public class KsitigarbhaFragment extends Fragment {
             viewModel.addCount();
             binding.textviewFirst.setText(Integer.toString(viewModel.getCount()));
             viewModel.setMark(LocalDate.now());
-            viewModel.writeCountToFile(getContext());;
+            viewModel.writeCountToFile(getContext());
             return true;  // true 不處理OnClick
         });
         binding.buttonCount.setOnClickListener(v -> {
