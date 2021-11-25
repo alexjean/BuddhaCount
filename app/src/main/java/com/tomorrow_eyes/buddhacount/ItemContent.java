@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -89,17 +90,21 @@ public class ItemContent {
         ITEMS.add(0, item);
     }
 
+    public static byte[] getBytes() {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i< ITEMS.size();i++) {
+            CountItem ci= ITEMS.get(i);
+            sb.append(String.format("'%s', %d, %tF%n", ci.content, ci.count, ci.mark));
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
     public static void writeToFile(Context context) {
         String fileName = context.getExternalFilesDir(null) + "/" +
                 context.getString(R.string.filename_list);
         FileOutputStream stream;
         try {
-            StringBuilder sb = new StringBuilder();
-            for(int i=0; i< ITEMS.size();i++) {
-                CountItem ci= ITEMS.get(i);
-                sb.append(String.format("'%s', %d, %tF%n", ci.content, ci.count, ci.mark));
-            }
-            byte[] buf = sb.toString().getBytes(StandardCharsets.UTF_8);
+            byte[] buf = getBytes();
             stream = new FileOutputStream(fileName, false);
             stream.write(buf);
             stream.close();
@@ -108,7 +113,7 @@ public class ItemContent {
         }
     }
 
-    private static void addItem(int id, String line) {
+    private static boolean addItem(int id, String line) {
         // System.out.println(line);
         try {
             String[] split = line.split(",");
@@ -120,7 +125,24 @@ public class ItemContent {
             ITEMS.add(item);
         } catch (Exception e) {
             Log.d("addItem: ",e.getMessage());
-       }
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean streamToItems(InputStream stream) throws IOException {
+        InputStreamReader in = new InputStreamReader(stream, StandardCharsets.UTF_8);
+        BufferedReader reader = new BufferedReader(in);
+        String line;
+        ITEMS.clear();
+        boolean flag = true;
+        for(int i=1;(line = reader.readLine()) != null; i++) {
+            flag = flag && addItem(i, line);
+        }
+        if (ITEMS.size() > 0)
+            ITEMS.get(ITEMS.size()-1).setId("-");  // 最後統計
+        in.close();
+        return flag;
     }
 
     public static void readFromFile(Context context) {
@@ -128,16 +150,7 @@ public class ItemContent {
                 context.getString(R.string.filename_list);
         try {
             FileInputStream stream = new FileInputStream(fileName);
-            InputStreamReader in = new InputStreamReader(stream, StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(in);
-            String line;
-            ITEMS.clear();
-            for(int i=1;(line = reader.readLine()) != null; i++) {
-                addItem(i, line);
-            }
-            if (ITEMS.size() > 0)
-                ITEMS.get(ITEMS.size()-1).setId("-");  // 最後統計
-            in.close();
+            streamToItems(stream);
             stream.close();
          } catch (IOException e) {
             Log.d("readFromFile: ",e.getMessage());

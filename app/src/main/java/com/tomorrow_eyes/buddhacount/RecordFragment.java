@@ -8,22 +8,33 @@ import static androidx.recyclerview.widget.ItemTouchHelper.RIGHT;
 import static androidx.recyclerview.widget.ItemTouchHelper.START;
 import static androidx.recyclerview.widget.ItemTouchHelper.UP;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.renderscript.ScriptGroup;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -37,6 +48,11 @@ import com.google.android.material.snackbar.Snackbar;
 import com.tomorrow_eyes.buddhacount.ItemContent.CountItem;
 import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -56,11 +72,8 @@ public class RecordFragment extends Fragment {
     }
 
     public static RecordFragment newInstance() {
-//        String param1, String param2) {
         RecordFragment fragment = new RecordFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,10 +81,7 @@ public class RecordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -170,6 +180,14 @@ public class RecordFragment extends Fragment {
         return (RecyclerView) fragment.getView();
     }
 
+    private void adapterNotifyDataSetChanged()
+    {
+        RecyclerView recyclerView = getSubRecyclerView();
+        if (recyclerView == null) return;
+        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        if (adapter != null) adapter.notifyDataSetChanged();
+    }
+
     public void recordCountAdjustStatistic() {
         String content = viewModel.getTitle(mContext);
         ItemContent.insertItemUpdateList(new CountItem("0", content,
@@ -178,10 +196,7 @@ public class RecordFragment extends Fragment {
         viewModel.setMark(LocalDate.now());
         binding.textViewCount.setText(viewModel.getCountString());
         viewModel.writeCountToFile(mContext);
-        RecyclerView recyclerView = getSubRecyclerView();
-        if (recyclerView == null) return;
-        RecyclerView.Adapter adapter = recyclerView.getAdapter();
-        if (adapter != null) adapter.notifyDataSetChanged();
+        adapterNotifyDataSetChanged();
         ItemContent.writeToFile(mContext);
         SnackbarWarning(binding.getRoot(), getString(R.string.msg_already_on_top), false);
     }
@@ -302,6 +317,88 @@ public class RecordFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        for (int i = 0; i< menu.size(); i++)
+            menu.getItem(i).setVisible(false);
+    }
 
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        menu.findItem(R.id.backup_to_disk).setVisible(true);
+        menu.findItem(R.id.restore_backup).setVisible(true);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    ActivityResultLauncher<Intent> mBackupForResult =
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent intent = result.getData();
+                    if (intent == null) return;
+                    Uri uri = intent.getData();
+                    if (uri == null) return;
+                    try {
+                        OutputStream os = mContext.getContentResolver().openOutputStream(uri);
+                        if( os != null ) {
+                            os.write(ItemContent.getBytes());
+                            os.close();
+                        }
+                    }
+                    catch(IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+        });
+    ActivityResultLauncher<Intent> mRestoreForResult =
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent intent = result.getData();
+                    Uri uri = intent.getData();
+                    if (uri == null) return;
+                    try {
+                        InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
+                        if( inputStream != null ) {
+                            boolean flag = ItemContent.streamToItems(inputStream);
+                            inputStream.close();
+                            adapterNotifyDataSetChanged();
+
+                            AlertDialog.Builder builder  = new AlertDialog.Builder(getContext());
+                            builder.setMessage("確定要以此備份，覆蓋現有記錄?");
+                            builder.setTitle(R.string.restore_backup);
+                            builder.setCancelable(true);
+                            builder.setPositiveButton(R.string.confirm_text, (dlg, which)->{
+                                ItemContent.writeToFile(mContext);
+                            });
+                            builder.setNegativeButton(R.string.cancel_text, (dlg, which)->{
+                                ItemContent.readFromFile(mContext);
+                                adapterNotifyDataSetChanged();
+                            });
+                            AlertDialog dialog = builder.create();
+                            dialog.getWindow().setGravity(Gravity.BOTTOM);
+                            dialog.show();
+                        }
+                    }
+                    catch(IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+        });
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.backup_to_disk) {
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT).setType("text/plain");
+            mBackupForResult.launch(intent);
+        } else if (id == R.id.restore_backup) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("text/plain");
+            mRestoreForResult.launch(intent);
+        }
+        else return super.onOptionsItemSelected(item);
+        return true;
+    }
 
 }

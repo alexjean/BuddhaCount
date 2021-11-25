@@ -8,6 +8,14 @@
         android:title="@string/action_record"
         app:showAsAction="never" />
     <item
+        android:id="@+id/backup_to_disk"
+        android:title="@string/backup_to_disk"
+        android:visible="false" />
+    <item
+        android:id="@+id/restore_backup"
+        android:title="@string/restore_backup"
+        android:visible="false" />
+    <item
         android:id="@+id/sound_switch"
         android:checkable="true"
         android:checked="true"
