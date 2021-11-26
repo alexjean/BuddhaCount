@@ -21,4 +21,8 @@
     <string name="msg_list_too_long_will_merge">列表己超長,最後二行將合併</string>
     <string name="msg_already_on_top">己儲存置頂</string>
     <string name="msg_count_number_not_zero">前台計數不是0 ,無法取出記錄</string>
+    <string name="reading_error_msg">读取过程有错误!</string>
+    <string name="backup_override_confirm">确定要以此备份，覆盖现有记录?</string>
+    <string name="backup_to_disk">备份记录</string>
+    <string name="restore_backup">取回备份</string>
 </resources>

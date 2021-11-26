@@ -58,12 +58,6 @@ import java.util.List;
 
 public class RecordFragment extends Fragment {
 
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
-
-//    private String mParam1;
-//    private String mParam2;
-
     private FragmentRecordBinding binding;
     private MyViewModel viewModel;
 
@@ -239,33 +233,8 @@ public class RecordFragment extends Fragment {
                     adapter.notifyItemRemoved(position);
                 });
                 dlg.setNegativeButton(R.string.cancel_text, null);
-                dlg.setOnDismissListener((dialog1)->adapter.notifyItemChanged(position));
+                dlg.setOnDismissListener(dialog1 -> adapter.notifyItemChanged(position));
                 dlg.create().show();
-/*
-                if (viewModel.getCount() == 0)
-                {
-                    String msg = String.format("前台計數為 0, 記錄<%s>無法互換!", item.id);
-                    Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
-                    Vibrator vibrator= (Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE);
-                    vibrator.vibrate(VibrationEffect.createOneShot(350, 200));
-                    adapter.notifyItemChanged(position);
-                    return;
-                }
-                CountItem item1 = new CountItem(item.id, viewModel.getTitle(),
-                                    viewModel.getCount(), viewModel.getMark());
-                viewModel.setTitle(item.content);
-                viewModel.setCount(item.count);
-                viewModel.setMark(item.mark);
-                binding.textViewCount.setText(viewModel.getCountString());
-                binding.editTextTitle.setText(viewModel.getTitle());
-                ItemContent.ITEMS.set(position, item1);
-                adapter.notifyItemChanged(position);
-                viewModel.writeConfig(mContext);
-                viewModel.writeCountToFile(mContext);
-                ItemContent.writeToFile(mContext);
-                String msg = String.format("編號<%s>己和前台互換!", item.id);
-                Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
- */
             }
 
             @Override
@@ -274,7 +243,6 @@ public class RecordFragment extends Fragment {
             }
         });
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
     }
 
     public void attachRecyclerViewItemLongClick(MyItemRecyclerViewAdapter adapter) {
@@ -352,39 +320,43 @@ public class RecordFragment extends Fragment {
                 }
         });
     ActivityResultLauncher<Intent> mRestoreForResult =
-        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent intent = result.getData();
-                    Uri uri = intent.getData();
-                    if (uri == null) return;
-                    try {
-                        InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
-                        if( inputStream != null ) {
-                            boolean flag = ItemContent.streamToItems(inputStream);
-                            inputStream.close();
-                            adapterNotifyDataSetChanged();
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent intent = result.getData();
+                Uri uri = intent.getData();
+                if (uri == null) return;
+                try {
+                    InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
+                    if( inputStream == null ) {
+                        SnackbarWarning(binding.getRoot(), "找不到指定檔案!", true);
+                        return;
+                    }
+                    boolean b = ItemContent.streamToItems(inputStream);
+                    inputStream.close();
+                    adapterNotifyDataSetChanged();
 
-                            AlertDialog.Builder builder  = new AlertDialog.Builder(getContext());
-                            builder.setMessage("確定要以此備份，覆蓋現有記錄?");
-                            builder.setTitle(R.string.restore_backup);
-                            builder.setCancelable(true);
-                            builder.setPositiveButton(R.string.confirm_text, (dlg, which)->{
-                                ItemContent.writeToFile(mContext);
-                            });
-                            builder.setNegativeButton(R.string.cancel_text, (dlg, which)->{
-                                ItemContent.readFromFile(mContext);
-                                adapterNotifyDataSetChanged();
-                            });
-                            AlertDialog dialog = builder.create();
-                            dialog.getWindow().setGravity(Gravity.BOTTOM);
-                            dialog.show();
-                        }
-                    }
-                    catch(IOException e) {
-                        e.printStackTrace();
-                    }
+                    AlertDialog.Builder builder  = new AlertDialog.Builder(mContext);
+                    String msg=b?"":getString(R.string.reading_error_msg)+"\r\n";
+                    builder.setMessage(msg + getString(R.string.backup_override_confirm));
+                    builder.setTitle(R.string.restore_backup);
+                    builder.setCancelable(true);
+                    builder.setPositiveButton(R.string.confirm_text, (dlg, wh)->ItemContent.writeToFile(mContext));
+                    builder.setNegativeButton(R.string.cancel_text, (dlg, wh)->{
+                        ItemContent.readFromFile(mContext);
+                        adapterNotifyDataSetChanged();
+                    });
+                    builder.setOnDismissListener((dlg)->{
+                        ItemContent.readFromFile(mContext);
+                        adapterNotifyDataSetChanged();
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.getWindow().setGravity(Gravity.BOTTOM);
+                    dialog.show();
                 }
+                catch(IOException e) {
+                    e.printStackTrace();
+                }
+            }
         });
 
     @Override
@@ -392,9 +364,11 @@ public class RecordFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.backup_to_disk) {
             Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT).setType("text/plain");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
             mBackupForResult.launch(intent);
         } else if (id == R.id.restore_backup) {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("text/plain");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
             mRestoreForResult.launch(intent);
         }
         else return super.onOptionsItemSelected(item);

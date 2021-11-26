@@ -21,4 +21,8 @@
     <string name="msg_list_too_long_will_merge">リストが長すぎるため、最後の2行がマージされます</string>
     <string name="msg_already_on_top">が保存されました</string>
     <string name="msg_count_number_not_zero">前景の数が0ではなく、レコードを取得できません</string>
+    <string name="backup_to_disk">ファイルへのバックアップ</string>
+    <string name="restore_backup">ファイルから復元</string>
+    <string name="backup_override_confirm">Sure to override records with this</string>
+    <string name="reading_error_msg">ファイル読み取りエラー！</string>
 </resources>

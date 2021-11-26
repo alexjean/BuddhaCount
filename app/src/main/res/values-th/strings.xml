@@ -21,4 +21,8 @@
     <string name="msg_list_too_long_will_merge">รายการยาวเกินไปและสองบรรทัดสุดท้ายจะถูกรวมเข้าด้วยกัน</string>
     <string name="msg_already_on_top">บันทึกแล้ว</string>
     <string name="msg_count_number_not_zero">จำนวนเบื้องหน้าไม่ใช่ 0 ไม่สามารถดึงข้อมูลระเบียนได้</string>
+    <string name="backup_to_disk">สำรองข้อมูลไปยังไฟล์</string>
+    <string name="restore_backup">กู้คืนจากไฟล์</string>
+    <string name="backup_override_confirm">แน่ใจว่าจะเขียนทับระเบียนด้วยสิ่งนี้</string>
+    <string name="reading_error_msg">ข้อผิดพลาดในการอ่านไฟล์!</string>
 </resources>

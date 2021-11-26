@@ -17,8 +17,8 @@ android {
         applicationId "com.tomorrow_eyes.buddhacount"
         minSdk 26
         targetSdk 30
-        versionCode 9
-        versionName '1.07'
+        versionCode 10
+        versionName '1.08'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

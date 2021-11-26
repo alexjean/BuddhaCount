@@ -138,6 +138,7 @@ public class ItemContent {
         boolean flag = true;
         for(int i=1;(line = reader.readLine()) != null; i++) {
             flag = flag && addItem(i, line);
+            if (ITEMS.size() > MaxCOUNT) break;
         }
         if (ITEMS.size() > 0)
             ITEMS.get(ITEMS.size()-1).setId("-");  // 最後統計

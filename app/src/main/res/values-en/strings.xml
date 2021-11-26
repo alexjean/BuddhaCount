@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Chanting Counter</string>
-    <string name="action_record">Record</string>
+    <string name="action_record">Records</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">Namo Ksitigarbha</string>
     <string name="next">Next</string>
     <string name="ksitigarbha">Namo Ksitigarbha</string>
 
     <string name="end">End</string>
-    <string name="fragment_item_label">Record</string>
+    <string name="fragment_item_label">Records</string>
     <string name="wood_fish">Wooden knocker</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="button_reset">Save Reset</string>
@@ -23,6 +23,10 @@
     <string name="msg_list_too_long_will_merge">List too long! The bottom 2 lines will be merged</string>
     <string name="msg_already_on_top">Put the record on top of list</string>
     <string name="msg_count_number_not_zero">Cannot override nonzero counter</string>
+    <string name="backup_to_disk">Backup to file</string>
+    <string name="restore_backup">Restore from file</string>
+    <string name="backup_override_confirm">Sure to overwrite records with this</string>
+    <string name="reading_error_msg">File reading error!</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>
