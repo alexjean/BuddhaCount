@@ -4,8 +4,14 @@ plugins {
 
 android {
     signingConfigs {
+        debug {
+            storeFile file("${System.properties['user.home']}/.Android/debug.keystore")
+            keyAlias 'androiddebugkey'
+            storePassword 'android'
+            keyPassword 'android'
+        }
         release {
-            storeFile file('$Home/GoogePlayKey.jks')
+            storeFile file("${System.properties['user.home']}/GoogePlayKey.jks")
             storePassword 'loveAlex'
             keyPassword 'loveAlex'
             keyAlias 'tomorrow eyes'
@@ -17,16 +23,21 @@ android {
         applicationId "com.tomorrow_eyes.buddhacount"
         minSdk 26
         targetSdk 30
-        versionCode 10
-        versionName '1.08'
+        versionCode 11
+        versionName '1.09'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
