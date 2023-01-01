@@ -1,5 +1,6 @@
 package com.tomorrow_eyes.buddhacount;
 
+import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
@@ -13,13 +14,20 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.tomorrow_eyes.buddhacount.databinding.ActivityMainBinding;
 
+import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.OrientationEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private MyViewModel viewModel;
+    private OrientationEventListener mOrientationListener;
+    private String DEBUG_TAG="Alex_Debug";
+    //private int origin_brightness;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,24 @@ public class MainActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setTitle(viewModel.getTitle(this));
+
+//        origin_brightness = Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS, 0);
+
+        mOrientationListener = new OrientationEventListener(this,
+                SensorManager.SENSOR_DELAY_NORMAL) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                Log.v(DEBUG_TAG, "Orientation changed to " + orientation);
+//                Settings.System.putInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS, 1);
+            }
+        };
+        if (mOrientationListener.canDetectOrientation() == true) {
+            Log.v(DEBUG_TAG, "Can detect orientation");
+            mOrientationListener.enable();
+        } else {
+            Log.v(DEBUG_TAG, "Cannot detect orientation");
+            mOrientationListener.disable();
+        }
     }
 
     @Override
@@ -77,5 +103,12 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mOrientationListener.disable();
+        //Settings.System.putInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS, origin_brightness);
     }
 }
