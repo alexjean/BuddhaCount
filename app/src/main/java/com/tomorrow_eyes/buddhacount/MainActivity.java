@@ -52,11 +52,11 @@ public class MainActivity extends AppCompatActivity {
                 SensorManager.SENSOR_DELAY_NORMAL) {
             @Override
             public void onOrientationChanged(int orientation) {
-                Log.v(DEBUG_TAG, "Orientation changed to " + orientation);
+//                Log.v(DEBUG_TAG, "Orientation changed to " + orientation);
 //                Settings.System.putInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS, 1);
             }
         };
-        if (mOrientationListener.canDetectOrientation() == true) {
+        if (mOrientationListener.canDetectOrientation()) {
             Log.v(DEBUG_TAG, "Can detect orientation");
             mOrientationListener.enable();
         } else {
