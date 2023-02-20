@@ -25,4 +25,5 @@
     <string name="restore_backup">กู้คืนจากไฟล์</string>
     <string name="backup_override_confirm">แน่ใจว่าจะเขียนทับระเบียนด้วยสิ่งนี้</string>
     <string name="reading_error_msg">ข้อผิดพลาดในการอ่านไฟล์!</string>
+    <string name="dark_background">พื้นหลังสีเข้ม</string>
 </resources>

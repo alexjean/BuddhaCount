@@ -100,8 +100,7 @@ public class ItemContent {
     }
 
     public static void writeToFile(Context context) {
-        String fileName = context.getExternalFilesDir(null) + "/" +
-                context.getString(R.string.filename_list);
+        String fileName = context.getExternalFilesDir(null) + "/" + context.getString(R.string.filename_list);
         FileOutputStream stream;
         try {
             byte[] buf = getBytes();
@@ -147,13 +146,12 @@ public class ItemContent {
     }
 
     public static void readFromFile(Context context) {
-        String fileName = context.getExternalFilesDir(null) + "/" +
-                context.getString(R.string.filename_list);
+        String fileName = context.getExternalFilesDir(null) + "/" + context.getString(R.string.filename_list);
         try {
             FileInputStream stream = new FileInputStream(fileName);
             streamToItems(stream);
             stream.close();
-         } catch (IOException e) {
+        } catch (IOException e) {
             Log.d("readFromFile: ",e.getMessage());
         }
     }

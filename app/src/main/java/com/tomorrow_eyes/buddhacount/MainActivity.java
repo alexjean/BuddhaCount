@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.OrientationEventListener;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setTitle(viewModel.getTitle(this));
 
+/*
 //        origin_brightness = Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS, 0);
 
         mOrientationListener = new OrientationEventListener(this,
@@ -58,11 +60,12 @@ public class MainActivity extends AppCompatActivity {
         };
         if (mOrientationListener.canDetectOrientation()) {
             Log.v(DEBUG_TAG, "Can detect orientation");
-            mOrientationListener.enable();
+//            mOrientationListener.enable();
         } else {
             Log.v(DEBUG_TAG, "Cannot detect orientation");
             mOrientationListener.disable();
         }
+ */
     }
 
     @Override
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         menu.findItem(R.id.sound_switch).setChecked(viewModel.getWoodenKnocker());
+        menu.findItem(R.id.dark_background).setChecked(viewModel.getDarkBackground());
         return true;
     }
 
@@ -94,6 +98,20 @@ public class MainActivity extends AppCompatActivity {
             viewModel.writeConfig(this);
             item.setChecked(b1);
         }
+        else if (id == R.id.dark_background) {
+            boolean b1 = !viewModel.getDarkBackground();
+            viewModel.setDarkBackground(b1);
+            viewModel.writeConfig(this);
+            item.setChecked(b1);
+            // 在 FirstFragment onCreate時會去設dark background
+            Fragment navFragment = getSupportFragmentManager().getPrimaryNavigationFragment();
+            if (navFragment == null) return false;
+            Fragment frag1 = navFragment.getChildFragmentManager().getFragments().get(0);
+            if (frag1 instanceof KsitigarbhaFragment) {
+                View view1 = frag1.getView();
+                if (view1 !=null) view1.invalidate();
+            }
+        }
         else return super.onOptionsItemSelected(item);
         return true;
     }
@@ -108,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mOrientationListener.disable();
+        //mOrientationListener.disable();
         //Settings.System.putInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS, origin_brightness);
     }
 }

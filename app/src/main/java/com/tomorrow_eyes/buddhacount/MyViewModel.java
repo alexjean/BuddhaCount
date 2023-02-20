@@ -25,6 +25,8 @@ public class MyViewModel extends ViewModel {
     private MutableLiveData<Boolean> woodenKnocker;
     private MutableLiveData<String>  title;
 
+    private MutableLiveData<Boolean> darkBackground;
+
 
     public int getCount() {
         if (count != null) return count.getValue();
@@ -72,6 +74,18 @@ public class MyViewModel extends ViewModel {
     public void setWoodenKnocker(Boolean value) {
         if (woodenKnocker == null) woodenKnocker = new MutableLiveData<>();
         woodenKnocker.setValue(value);
+    }
+
+    public Boolean getDarkBackground() {
+        if (darkBackground != null) return darkBackground.getValue();
+        darkBackground = new MediatorLiveData<>();
+        darkBackground.setValue(false);
+        return false;
+    }
+
+    public void setDarkBackground(Boolean value) {
+        if (darkBackground == null) darkBackground = new MutableLiveData<>();
+        darkBackground.setValue(value);
     }
 
     public void writeCountToFile(Context context) {
@@ -145,6 +159,7 @@ public class MyViewModel extends ViewModel {
                 JSONObject jsonObj = new JSONObject(strJson);
                 setTitle(jsonObj.getString("Title"));
                 setWoodenKnocker(jsonObj.getBoolean("SoundSwitch"));
+                setDarkBackground(jsonObj.getBoolean("DarkBackground"));
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -158,7 +173,7 @@ public class MyViewModel extends ViewModel {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("Title", getTitle(context));
             jsonObject.put("SoundSwitch", getWoodenKnocker());
-
+            jsonObject.put("DarkBackground", getDarkBackground());
             byte[] buf = jsonObject.toString().getBytes(StandardCharsets.UTF_8);
             FileOutputStream stream = new FileOutputStream(fileName, false);
             stream.write(buf);

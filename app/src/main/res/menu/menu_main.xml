@@ -22,7 +22,14 @@
         android:orderInCategory="103"
         android:title="@string/wood_fish" />
     <item
-        android:id="@+id/item_leave"
+        android:id="@+id/dark_background"
+        android:visible="false"
+        android:checkable="true"
+        android:checked="false"
         android:orderInCategory="104"
+        android:title="@string/dark_background" />
+    <item
+        android:id="@+id/item_leave"
+        android:orderInCategory="105"
         android:title="@string/end" />
 </menu>

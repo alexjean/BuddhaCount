@@ -25,4 +25,5 @@
     <string name="restore_backup">取回备份</string>
     <string name="backup_override_confirm">确定要以此备份，覆盖现有记录?</string>
     <string name="reading_error_msg">读取过程有错误!</string>
+    <string name="dark_background">暗背景</string>
 </resources>

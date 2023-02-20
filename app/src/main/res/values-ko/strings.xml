@@ -25,4 +25,5 @@
     <string name="restore_backup">파일에서 복원</string>
     <string name="backup_override_confirm">이것으로 레코드를 덮어쓰시겠습니까</string>
     <string name="reading_error_msg">파일 읽기 오류!</string>
+    <string name="dark_background">어두운 배경</string>
 </resources>

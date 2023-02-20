@@ -25,4 +25,5 @@
     <string name="backup_override_confirm">确定要以此备份，覆盖现有记录?</string>
     <string name="backup_to_disk">备份记录</string>
     <string name="restore_backup">取回备份</string>
+    <string name="dark_background">暗背景</string>
 </resources>

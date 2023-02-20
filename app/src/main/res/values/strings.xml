@@ -30,5 +30,6 @@
     <string name="restore_backup">Restore from file</string>
     <string name="backup_override_confirm">Sure to override records with this</string>
     <string name="reading_error_msg">File reading error!</string>
+    <string name="dark_background">Dark background</string>
 
 </resources>

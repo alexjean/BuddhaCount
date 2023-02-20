@@ -76,6 +76,8 @@ public class KsitigarbhaFragment extends Fragment {
         binding.buttonCount.setOnClickListener(v -> {
             // setBackgroundDarker();
         });
+//        if (viewModel.getDarkBackground())
+//            view.setBackgroundColor(0x00000000);
     }
 
     @Override

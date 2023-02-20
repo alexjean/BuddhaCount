@@ -25,4 +25,5 @@
     <string name="restore_backup">取回備份</string>
     <string name="backup_override_confirm">確定要以此備份，覆蓋現有記錄?</string>
     <string name="reading_error_msg">讀取過程有錯誤!</string>
+    <string name="dark_background">暗背景</string>
 </resources>
