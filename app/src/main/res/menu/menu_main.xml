@@ -23,7 +23,7 @@
         android:title="@string/wood_fish" />
     <item
         android:id="@+id/dark_background"
-        android:visible="false"
+        android:visible="true"
         android:checkable="true"
         android:checked="false"
         android:orderInCategory="104"

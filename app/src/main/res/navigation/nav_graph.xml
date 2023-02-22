@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_FirstFragment_to_recordFragment"
             app:destination="@id/recordFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_self"
+            app:destination="@id/FirstFragment" />
     </fragment>
     <fragment
         android:id="@+id/recordFragment"

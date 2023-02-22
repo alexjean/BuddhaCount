@@ -1,14 +1,19 @@
 package com.tomorrow_eyes.buddhacount;
 
+import android.app.Activity;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavHostController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
@@ -34,10 +39,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
         viewModel = new ViewModelProvider(this).get(MyViewModel.class);
         viewModel.readConfig(this);
+
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -104,12 +110,13 @@ public class MainActivity extends AppCompatActivity {
             viewModel.writeConfig(this);
             item.setChecked(b1);
             // 在 FirstFragment onCreate時會去設dark background
-            Fragment navFragment = getSupportFragmentManager().getPrimaryNavigationFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            Fragment navFragment = manager.getPrimaryNavigationFragment();
             if (navFragment == null) return false;
             Fragment frag1 = navFragment.getChildFragmentManager().getFragments().get(0);
             if (frag1 instanceof KsitigarbhaFragment) {
-                View view1 = frag1.getView();
-                if (view1 !=null) view1.invalidate();
+                NavController controller = NavHostFragment.findNavController(navFragment);
+                controller.navigate(R.id.action_FirstFragment_self);      // 要加一個 action...self
             }
         }
         else return super.onOptionsItemSelected(item);

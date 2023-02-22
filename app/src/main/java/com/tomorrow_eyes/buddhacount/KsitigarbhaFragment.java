@@ -68,7 +68,7 @@ public class KsitigarbhaFragment extends Fragment {
                 mPlayer.start();
             }
             viewModel.addCount();
-            binding.textviewFirst.setText(Integer.toString(viewModel.getCount()));
+            binding.textviewFirst.setText(viewModel.getCountString());
             viewModel.setMark(LocalDate.now());
             viewModel.writeCountToFile(getContext());
             return true;  // true 不處理OnClick
@@ -76,8 +76,14 @@ public class KsitigarbhaFragment extends Fragment {
         binding.buttonCount.setOnClickListener(v -> {
             // setBackgroundDarker();
         });
-//        if (viewModel.getDarkBackground())
-//            view.setBackgroundColor(0x00000000);
+        if (viewModel.getDarkBackground()) {
+            view.setBackgroundColor(0xFF000000);
+//            TypedValue value = new TypedValue();     // 夜晚模式時是黑的
+//            getContext().getTheme().resolveAttribute(R.attr.colorOnPrimary, value, true);
+//            binding.textviewFirst.setTextColor(value.data);
+            int color = getResources().getColor(R.color.alex_background, getContext().getTheme());
+            binding.textviewFirst.setTextColor(color);
+        }
     }
 
     @Override
