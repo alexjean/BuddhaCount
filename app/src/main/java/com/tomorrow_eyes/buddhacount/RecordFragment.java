@@ -11,6 +11,7 @@ import static androidx.recyclerview.widget.ItemTouchHelper.UP;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -309,7 +310,8 @@ public class RecordFragment extends Fragment {
                     Uri uri = intent.getData();
                     if (uri == null) return;
                     try {
-                        OutputStream os = mContext.getContentResolver().openOutputStream(uri);
+                        ContentResolver resolver = mContext.getContentResolver();
+                        OutputStream os = resolver.openOutputStream(uri, "wt"); // write truncate
                         if( os != null ) {
                             os.write(ItemContent.getBytes());
                             os.close();

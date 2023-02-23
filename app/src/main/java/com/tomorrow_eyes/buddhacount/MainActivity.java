@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //mOrientationListener.disable();
-        //Settings.System.putInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS, origin_brightness);
+        // mOrientationListener.disable();
+        // Settings.System.putInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS, origin_brightness);
     }
 }
