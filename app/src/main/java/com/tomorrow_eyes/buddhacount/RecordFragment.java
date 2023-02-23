@@ -38,9 +38,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -77,7 +79,7 @@ public class RecordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        // setHasOptionsMenu(true);  // deprecated
     }
 
     @Override
@@ -150,6 +152,8 @@ public class RecordFragment extends Fragment {
                         recordCountAdjustStatistic();
                 });
         });
+
+        setupMenu();
     }
 
     @Override
@@ -287,6 +291,37 @@ public class RecordFragment extends Fragment {
         });
     }
 
+    public void setupMenu() {
+        MenuProvider provider = new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.menu_main, menu);
+                for (int i = 0; i< menu.size(); i++)
+                    menu.getItem(i).setVisible(false);
+                menu.findItem(R.id.backup_to_disk).setVisible(true);
+                menu.findItem(R.id.restore_backup).setVisible(true);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.backup_to_disk) {
+                    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT).setType("text/plain");
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    mBackupForResult.launch(intent);
+                } else if (id == R.id.restore_backup) {
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("text/plain");
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    mRestoreForResult.launch(intent);
+                } else return false;
+                return true;
+            }
+        };
+        MenuHost host = (MenuHost) requireActivity();
+        host.addMenuProvider(provider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+    }
+
+/*  Deprecated
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -300,6 +335,23 @@ public class RecordFragment extends Fragment {
         menu.findItem(R.id.restore_backup).setVisible(true);
         super.onPrepareOptionsMenu(menu);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.backup_to_disk) {
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT).setType("text/plain");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            mBackupForResult.launch(intent);
+        } else if (id == R.id.restore_backup) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("text/plain");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            mRestoreForResult.launch(intent);
+        }
+        else return super.onOptionsItemSelected(item);
+        return true;
+    }
+*/
 
     ActivityResultLauncher<Intent> mBackupForResult =
         registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -362,20 +414,5 @@ public class RecordFragment extends Fragment {
             }
         });
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.backup_to_disk) {
-            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT).setType("text/plain");
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            mBackupForResult.launch(intent);
-        } else if (id == R.id.restore_backup) {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("text/plain");
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            mRestoreForResult.launch(intent);
-        }
-        else return super.onOptionsItemSelected(item);
-        return true;
-    }
 
 }
