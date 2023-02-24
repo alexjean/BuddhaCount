@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.renderscript.ScriptGroup;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,8 +31,6 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -44,6 +41,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,8 +50,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.tomorrow_eyes.buddhacount.ItemContent.CountItem;
 import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,6 +64,7 @@ public class RecordFragment extends Fragment {
     public RecordFragment() {
         // Required empty public constructor
     }
+
 
     public static RecordFragment newInstance() {
         RecordFragment fragment = new RecordFragment();
@@ -88,7 +85,10 @@ public class RecordFragment extends Fragment {
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment_record, container, false);
         binding = FragmentRecordBinding.inflate(inflater, container, false);
-        viewModel = new ViewModelProvider(getActivity()).get(MyViewModel.class);
+        Activity activity = getActivity();
+        if (activity != null) {
+            viewModel = new ViewModelProvider((ViewModelStoreOwner) activity).get(MyViewModel.class);
+        }
         return binding.getRoot();
     }
 
@@ -228,9 +228,9 @@ public class RecordFragment extends Fragment {
                 int position = viewHolder.getAbsoluteAdapterPosition();
                 CountItem item = ItemContent.ITEMS.get(position);
                 AlertDialog.Builder dlg  = new AlertDialog.Builder(mContext);
-                String title = item.content;
+                String title = item.getContent();
                 if (title.length() > 7) title= title.substring(0, 7)+"..";
-                dlg.setMessage(String.format("<%s> %s   %d",item.id, title, item.count));
+                dlg.setMessage(String.format("<%s> %s   %d", item.getId(), title, item.getCount()));
                 dlg.setTitle(R.string.confirm_delete);
                 dlg.setCancelable(true);
                 dlg.setPositiveButton(R.string.confirm_text, (dialog, which) -> {
@@ -260,7 +260,7 @@ public class RecordFragment extends Fragment {
             popupMenu.getMenuInflater().inflate(R.menu.menu_popup, popupMenu.getMenu());
             popupMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.popup_copy_title) {
-                    viewModel.setTitle(countItem.content);
+                    viewModel.setTitle(countItem.getContent());
                     binding.editTextTitle.setText(viewModel.getTitle(mContext));
                     viewModel.writeConfig(mContext);
                     return true;
@@ -270,9 +270,9 @@ public class RecordFragment extends Fragment {
                         SnackbarWarning(binding.getRoot(), getString(R.string.msg_count_number_not_zero), true);
                         return false;
                     }
-                    viewModel.setTitle(countItem.content);
-                    viewModel.setCount(countItem.count);
-                    viewModel.setMark(countItem.mark);
+                    viewModel.setTitle(countItem.getContent());
+                    viewModel.setCount(countItem.getCount());
+                    viewModel.setMark(countItem.getMark());
                     binding.editTextTitle.setText(viewModel.getTitle(mContext));
                     binding.textViewCount.setText(viewModel.getCountString());
                     viewModel.writeConfig(mContext);
