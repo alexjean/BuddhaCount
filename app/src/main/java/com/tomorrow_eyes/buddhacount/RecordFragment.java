@@ -363,7 +363,9 @@ public class RecordFragment extends Fragment {
                     if (uri == null) return;
                     try {
                         ContentResolver resolver = mContext.getContentResolver();
-                        OutputStream os = resolver.openOutputStream(uri, "wt"); // write truncate
+                        // 用Intent.ACTION_CREATE_DOCUMENT不會同名，會加(1)
+                        // write truncate需要嗎? 但確實發現覆寫，結束後面還有
+                        OutputStream os = resolver.openOutputStream(uri, "wt"); // write truncate,
                         if( os != null ) {
                             os.write(ItemContent.getBytes());
                             os.close();
@@ -378,6 +380,7 @@ public class RecordFragment extends Fragment {
         registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
                 Intent intent = result.getData();
+                if (intent == null) return;
                 Uri uri = intent.getData();
                 if (uri == null) return;
                 try {
