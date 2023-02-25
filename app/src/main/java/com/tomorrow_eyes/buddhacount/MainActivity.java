@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         viewModel = new ViewModelProvider(this).get(MyViewModel.class);
+        viewModel.setDefaultTitle(this.getString(R.string.amitabha));  // 給getTitle的default
         viewModel.readConfig(this);
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) actionBar.setTitle(viewModel.getTitle(this));
+        if (actionBar != null) actionBar.setTitle(viewModel.getTitle());
 
 /*
 //        origin_brightness = Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_BRIGHTNESS, 0);

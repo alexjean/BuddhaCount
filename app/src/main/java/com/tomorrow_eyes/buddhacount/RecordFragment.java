@@ -85,26 +85,28 @@ public class RecordFragment extends Fragment {
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment_record, container, false);
         binding = FragmentRecordBinding.inflate(inflater, container, false);
-        Activity activity = getActivity();
-        if (activity != null) {
-            viewModel = new ViewModelProvider((ViewModelStoreOwner) activity).get(MyViewModel.class);
+        ViewModelStoreOwner storeOwner = getActivity();
+        if (storeOwner != null) {
+            viewModel = new ViewModelProvider(storeOwner).get(MyViewModel.class);
         }
         return binding.getRoot();
     }
 
     public void SnackbarWarning(View view, String msg , boolean warning) {
-        Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_SHORT);
-        View view2 = snackbar.getView();
-        TextView tv = view2.findViewById(com.google.android.material.R.id.snackbar_text);
-        tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        snackbar.show();
+        if (view != null) {
+            Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_SHORT);
+            View view2 = snackbar.getView();
+            TextView tv = view2.findViewById(com.google.android.material.R.id.snackbar_text);
+            tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            snackbar.show();
+        }
         if (warning) {
             Vibrator vibrator = (Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE);
             vibrator.vibrate(VibrationEffect.createOneShot(350, 200));
         }
     }
 
-    public void areYouOk(int gravity, String msg, DialogInterface.OnClickListener onClickListener) {
+    private void areYouOk(int gravity, String msg, DialogInterface.OnClickListener onClickListener) {
         AlertDialog.Builder builder  = new AlertDialog.Builder(getContext());
         builder.setMessage(msg);
         builder.setTitle(R.string.button_reset);
@@ -116,24 +118,20 @@ public class RecordFragment extends Fragment {
         dialog.show();
     }
 
-    private Context mContext;
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        ItemContent.readFromFile(mContext=getContext());
-        binding.textViewCount.setText(viewModel.getCountString());
-        binding.editTextTitle.setText(viewModel.getTitle(mContext));
-
-        binding.buttonReset.setOnClickListener(view1 -> {
-            String content = binding.editTextTitle.getText().toString();
-            content=content.replace(",","");  // 不准有逗号
-            content=content.replace("\n", " ").trim();
-            binding.editTextTitle.setText(content);
+    private final View.OnClickListener onClickResetSaveListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
             String msg = getString(R.string.msg_count_is_zero);
-            if (!content.equals(viewModel.getTitle(mContext))) {
-                msg = getString(R.string.msg_settting_title)+" "+content;
-                viewModel.setTitle(content);
-                viewModel.writeConfig(mContext);
+            if (binding != null) {
+                String content = binding.editTextTitle.getText().toString();
+                content = content.replace(",", "");  // 不准有逗号
+                content = content.replace("\n", " ").trim();
+                binding.editTextTitle.setText(content);
+                if (!content.equals(viewModel.getTitle())) {
+                    msg = getString(R.string.msg_settting_title) + " " + content;
+                    viewModel.setTitle(content);
+                    viewModel.writeConfig(mContext);
+                }
             }
             if (viewModel.getCount() == 0)
                 SnackbarWarning(view, msg, true);
@@ -142,17 +140,29 @@ public class RecordFragment extends Fragment {
                     if (ItemContent.sizeOver()) {
                         RecyclerView recyclerView = getSubRecyclerView();
                         if (recyclerView != null)
-                            recyclerView.scrollToPosition(ItemContent.ITEMS.size()-1);
+                            recyclerView.scrollToPosition(ItemContent.ITEMS.size() - 1);
                         areYouOk(Gravity.BOTTOM, getString(R.string.msg_list_too_long_will_merge), (dlg1, which1) -> {
                             recordCountAdjustStatistic();
                             recyclerView.scrollToPosition(0);
                         });
-                    }
-                    else
+                    } else
                         recordCountAdjustStatistic();
                 });
-        });
+        }
+    };
 
+    private Context mContext;
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mContext = getContext();
+        if (mContext!=null)
+            ItemContent.readFromFile(mContext);
+        if (binding!=null) {
+            binding.textViewCount.setText(viewModel.getCountString());
+            binding.editTextTitle.setText(viewModel.getTitle());
+            binding.buttonReset.setOnClickListener(onClickResetSaveListener);
+        }
         setupMenu();
     }
 
@@ -189,7 +199,7 @@ public class RecordFragment extends Fragment {
     }
 
     public void recordCountAdjustStatistic() {
-        String content = viewModel.getTitle(mContext);
+        String content = viewModel.getTitle();
         ItemContent.insertItemUpdateList(new CountItem("0", content,
                 viewModel.getCount(), viewModel.getMark()));
         viewModel.setCount(0);
@@ -260,11 +270,14 @@ public class RecordFragment extends Fragment {
             popupMenu.getMenuInflater().inflate(R.menu.menu_popup, popupMenu.getMenu());
             popupMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.popup_copy_title) {
+                    if (viewModel == null) return false;
                     viewModel.setTitle(countItem.getContent());
-                    binding.editTextTitle.setText(viewModel.getTitle(mContext));
+                    if (binding != null)
+                        binding.editTextTitle.setText(viewModel.getTitle());
                     viewModel.writeConfig(mContext);
                     return true;
                 } else if (item.getItemId() == R.id.popup_bring_front) {
+                    if (viewModel == null) return false;
                     if (viewModel.getCount() != 0)
                     {
                         SnackbarWarning(binding.getRoot(), getString(R.string.msg_count_number_not_zero), true);
@@ -273,7 +286,7 @@ public class RecordFragment extends Fragment {
                     viewModel.setTitle(countItem.getContent());
                     viewModel.setCount(countItem.getCount());
                     viewModel.setMark(countItem.getMark());
-                    binding.editTextTitle.setText(viewModel.getTitle(mContext));
+                    binding.editTextTitle.setText(viewModel.getTitle());
                     binding.textViewCount.setText(viewModel.getCountString());
                     viewModel.writeConfig(mContext);
                     viewModel.writeCountToFile(mContext);
@@ -320,38 +333,6 @@ public class RecordFragment extends Fragment {
         MenuHost host = (MenuHost) requireActivity();
         host.addMenuProvider(provider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
-
-/*  Deprecated
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        for (int i = 0; i< menu.size(); i++)
-            menu.getItem(i).setVisible(false);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu) {
-        menu.findItem(R.id.backup_to_disk).setVisible(true);
-        menu.findItem(R.id.restore_backup).setVisible(true);
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.backup_to_disk) {
-            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT).setType("text/plain");
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            mBackupForResult.launch(intent);
-        } else if (id == R.id.restore_backup) {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("text/plain");
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            mRestoreForResult.launch(intent);
-        }
-        else return super.onOptionsItemSelected(item);
-        return true;
-    }
-*/
 
     ActivityResultLauncher<Intent> mBackupForResult =
         registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),

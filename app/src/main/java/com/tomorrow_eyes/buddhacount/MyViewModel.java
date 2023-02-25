@@ -25,8 +25,13 @@ public class MyViewModel extends ViewModel {
     private MutableLiveData<Boolean> woodenKnocker;
     private MutableLiveData<String>  title;
 
+    private MutableLiveData<String>  defaultTitle;
     private MutableLiveData<Boolean> darkBackground;
 
+    public void setDefaultTitle(String ti) {
+        if (defaultTitle == null) defaultTitle = new MutableLiveData<>();
+        defaultTitle.setValue(ti);
+    }
 
     public int getCount() {
         if (count != null) return count.getValue();
@@ -133,10 +138,13 @@ public class MyViewModel extends ViewModel {
         setMark(date1);
      }
 
-    public String getTitle(Context context) {
+    public String getTitle() {
         if (title == null) {
             title = new MediatorLiveData<>();
-            title.setValue(context.getString(R.string.amitabha));
+            if (defaultTitle == null)
+                title.setValue("Unknown");
+            else
+                title.setValue(defaultTitle.getValue());
         }
         return title.getValue();
     }
@@ -171,7 +179,7 @@ public class MyViewModel extends ViewModel {
                 context.getString(R.string.filename_config);
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("Title", getTitle(context));
+            jsonObject.put("Title", getTitle());
             jsonObject.put("SoundSwitch", getWoodenKnocker());
             jsonObject.put("DarkBackground", getDarkBackground());
             byte[] buf = jsonObject.toString().getBytes(StandardCharsets.UTF_8);

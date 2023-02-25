@@ -18,7 +18,7 @@ class MyItemRecyclerViewAdapter(private val mValues: List<CountItem>) : Recycler
             val position = viewHolder.layoutPosition
             //String msg = "Item<" + position + "> long Clicked!";
             //Snackbar.make(view, msg, Snackbar.LENGTH_SHORT).show();
-            if (longClickListener != null) longClickListener!!.onRecyclerViewItemLongClick(position, view)
+            longClickListener?.onRecyclerViewItemLongClick(position, view)
             true
         }
         return viewHolder

@@ -36,7 +36,7 @@ public class KsitigarbhaFragment extends Fragment {
         MainActivity activity = (MainActivity)requireActivity();
         viewModel = new ViewModelProvider(activity).get(MyViewModel.class);
         ActionBar actionBar=activity.getSupportActionBar();
-        if (actionBar != null) actionBar.setTitle(viewModel.getTitle(getContext()));
+        if (actionBar != null) actionBar.setTitle(viewModel.getTitle());
         binding = FragmentKsitigarbhaBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }

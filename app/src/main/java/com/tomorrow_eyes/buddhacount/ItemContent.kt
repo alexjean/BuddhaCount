@@ -50,8 +50,7 @@ object ItemContent {
     val bytes: ByteArray
         get() {
             val sb = StringBuilder()
-            for (i in ITEMS.indices) {
-                val ci = ITEMS[i]
+            for (ci in ITEMS) {
                 sb.append(String.format("'%s', %d, %tF%n", ci.content, ci.count, ci.mark))
             }
             return sb.toString().toByteArray(StandardCharsets.UTF_8)
@@ -67,7 +66,7 @@ object ItemContent {
             stream.write(buf)
             stream.close()
         } catch (e: IOException) {
-            Log.d("writeToFile: ", e.message!!)
+            Log.d("writeToFile: ", e.message ?:"Error with no message???")
         }
     }
 
@@ -82,7 +81,7 @@ object ItemContent {
             val item = CountItem(idStr, content, count, mark)
             ITEMS.add(item)
         } catch (e: Exception) {
-            Log.d("addItem: ", e.message!!)
+            Log.d("addItem: ", e.message ?: "Error with no message???" )
             return false
         }
         return true
@@ -113,7 +112,7 @@ object ItemContent {
             streamToItems(stream)
             stream.close()
         } catch (e: IOException) {
-            Log.d("readFromFile: ", e.message!!)
+            Log.d("readFromFile: ", e.message?: "Error with no message???")
         }
     }
 
