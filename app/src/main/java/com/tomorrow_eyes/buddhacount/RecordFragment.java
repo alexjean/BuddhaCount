@@ -58,8 +58,9 @@ import java.util.List;
 
 public class RecordFragment extends Fragment {
 
-    private FragmentRecordBinding binding;
-    private MyViewModel viewModel;
+    private FragmentRecordBinding binding; // Closure內沒有getContext可叫，故存
+    private MyViewModel viewModel; // Closure內沒有getContext可叫，故存
+    private Context mContext;      // Closure內沒有getContext可叫，故存
 
     public RecordFragment() {
         // Required empty public constructor
@@ -92,16 +93,18 @@ public class RecordFragment extends Fragment {
         return binding.getRoot();
     }
 
-    public void snackbarWarning(View view, String msg , boolean warning) {
+    public void snackbarWarning(String msg , boolean warning) {
+        View view = getView();
         if (view != null) {
-            Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_SHORT);
+            final View _view = view;
+            Snackbar snackbar = Snackbar.make(_view, msg, Snackbar.LENGTH_SHORT);
             View view2 = snackbar.getView();
             TextView tv = view2.findViewById(com.google.android.material.R.id.snackbar_text);
             tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             snackbar.show();
         }
         if (warning) {
-            Vibrator vibrator = (Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE);
+            Vibrator vibrator = (Vibrator) getContext().getSystemService(Service.VIBRATOR_SERVICE);
             vibrator.vibrate(VibrationEffect.createOneShot(350, 200));
         }
     }
@@ -118,14 +121,23 @@ public class RecordFragment extends Fragment {
         dialog.show();
     }
 
-    private final View.OnClickListener onClickResetSaveListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if (binding == null) return;
-            if (viewModel == null) return;
-            final FragmentRecordBinding _binding = binding;
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupMenu();
+        mContext = getContext();
+        if (mContext ==null) return;
+        if (binding == null) return;
+        if (viewModel == null) return;
+        ItemContent.readFromFile(mContext);
+        final FragmentRecordBinding _binding = binding;
+        if (viewModel != null) {
             final MyViewModel _viewModel = viewModel;
-
+            _binding.textViewCount.setText(_viewModel.getCountString());
+            _binding.editTextTitle.setText(_viewModel.getTitle());
+        }
+        _binding.buttonReset.setOnClickListener( view1 -> {
+            final MyViewModel _viewModel = viewModel;
             String content = _binding.editTextTitle.getText().toString();
             content = content.replace(",", "");  // 不准有逗号
             content = content.replace("\n", " ").trim();
@@ -140,7 +152,7 @@ public class RecordFragment extends Fragment {
                     _viewModel.writeConfig(_mContext);
             }
             if (_viewModel.getCount() == 0)
-                snackbarWarning(view, msg, true);
+                snackbarWarning(msg, true);
             else
                 areYouOk(Gravity.CENTER, getString(R.string.msg_sure_to_record_than_reset), (dlg, which) -> {
                     if (ItemContent.sizeOver()) {
@@ -154,26 +166,7 @@ public class RecordFragment extends Fragment {
                     } else
                         recordCountAdjustStatistic();
                 });
-        }
-    };
-
-    private Context mContext;
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mContext = getContext();
-        if (mContext!=null)
-            ItemContent.readFromFile(mContext);
-        if (binding!=null) {
-            final FragmentRecordBinding _binding = binding;
-            if (viewModel != null) {
-                final MyViewModel _viewModel = viewModel;
-                _binding.textViewCount.setText(_viewModel.getCountString());
-                _binding.editTextTitle.setText(_viewModel.getTitle());
-            }
-            _binding.buttonReset.setOnClickListener(onClickResetSaveListener);
-        }
-        setupMenu();
+        });
     }
 
     @Override
@@ -225,7 +218,7 @@ public class RecordFragment extends Fragment {
         if (binding != null) {
             final FragmentRecordBinding _binding = binding;
             _binding.textViewCount.setText(_viewModel.getCountString());
-            snackbarWarning(_binding.getRoot(), getString(R.string.msg_already_on_top), false);
+            snackbarWarning(getString(R.string.msg_already_on_top), false);
         }
     }
 
@@ -235,8 +228,7 @@ public class RecordFragment extends Fragment {
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
-                    final int dragFlags = UP | DOWN |
-                            LEFT | RIGHT;
+                    final int dragFlags = UP | DOWN | LEFT | RIGHT;
                     final int swipeFlags = 0;
                     return makeMovementFlags(dragFlags, swipeFlags);
                 } else {
@@ -280,22 +272,19 @@ public class RecordFragment extends Fragment {
     }
 
     public void attachRecyclerViewItemLongClick(MyItemRecyclerViewAdapter adapter) {
+        if (mContext == null ) return;
+        if (viewModel == null) return;
+        if (binding == null) return ;
+        final Context _mContext = mContext;
+        final MyViewModel _viewModel = viewModel;
+        final FragmentRecordBinding _binding = binding;
         adapter.setOnRecyclerViewItemLongClickListener((position, itemView) -> {
-            if (mContext == null) return;
-            final Context mContext1 = mContext;
             CountItem countItem = ItemContent.ITEMS.get(position);
             Drawable background = itemView.getBackground();
             itemView.setBackgroundColor(Color.LTGRAY);
-            PopupMenu popupMenu = new PopupMenu(mContext1, itemView);
+            PopupMenu popupMenu = new PopupMenu(_mContext, itemView);
             popupMenu.getMenuInflater().inflate(R.menu.menu_popup, popupMenu.getMenu());
             popupMenu.setOnMenuItemClickListener(item -> {
-                if (mContext == null)  return false;
-                if (viewModel == null) return false;
-                if (binding == null) return false;
-                final Context _mContext = mContext;
-                final MyViewModel _viewModel = viewModel;
-                final FragmentRecordBinding _binding = binding;
-
                 if (item.getItemId() == R.id.popup_copy_title) {
                     _viewModel.setTitle(countItem.getContent());
                     _binding.editTextTitle.setText(_viewModel.getTitle());
@@ -304,7 +293,7 @@ public class RecordFragment extends Fragment {
                 } else if (item.getItemId() == R.id.popup_bring_front) {
                     if (_viewModel.getCount() != 0)
                     {
-                        snackbarWarning(_binding.getRoot(), getString(R.string.msg_count_number_not_zero), true);
+                        snackbarWarning(getString(R.string.msg_count_number_not_zero), true);
                         return false;
                     }
                     _viewModel.setTitle(countItem.getContent());
@@ -322,7 +311,7 @@ public class RecordFragment extends Fragment {
                 return false;
             });
             popupMenu.setOnDismissListener(menu -> itemView.setBackground(background));
-            Vibrator vibrator = (Vibrator) mContext1.getSystemService(Service.VIBRATOR_SERVICE);
+            Vibrator vibrator = (Vibrator) _mContext.getSystemService(Service.VIBRATOR_SERVICE);
             popupMenu.show();
             vibrator.vibrate(VibrationEffect.createOneShot(150, 200));
         });
@@ -367,7 +356,8 @@ public class RecordFragment extends Fragment {
                     Uri uri = intent.getData();
                     if (uri == null) return;
                     try {
-                        ContentResolver resolver = mContext.getContentResolver();
+                        // 必需getContext(),不能用mContext, 因為回來Activity可能己經殺了
+                        ContentResolver resolver = getContext().getContentResolver();
                         // 用Intent.ACTION_CREATE_DOCUMENT不會同名，會加(1)
                         // write truncate需要嗎? 但確實發現覆寫，結束後面還有
                         OutputStream os = resolver.openOutputStream(uri, "wt"); // write truncate,
@@ -388,12 +378,13 @@ public class RecordFragment extends Fragment {
                 if (intent == null) return;
                 Uri uri = intent.getData();
                 if (uri == null) return;
-                if (mContext == null) return;
-                final Context _mContext = mContext;
+                // 必需getContext(),不能用mContext, 因為回來Activity可能己經殺了
+                if (getContext() == null) return;
+                final Context _mContext = getContext();
                 try {
                     InputStream inputStream = _mContext.getContentResolver().openInputStream(uri);
                     if( inputStream == null ) {
-                        snackbarWarning(binding.getRoot(), "找不到指定檔案!", true);
+                        snackbarWarning("找不到指定檔案!", true);
                         return;
                     }
                     boolean b = ItemContent.streamToItems(inputStream);
