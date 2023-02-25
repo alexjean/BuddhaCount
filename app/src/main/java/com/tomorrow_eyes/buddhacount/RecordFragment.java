@@ -92,7 +92,7 @@ public class RecordFragment extends Fragment {
         return binding.getRoot();
     }
 
-    public void SnackbarWarning(View view, String msg , boolean warning) {
+    public void snackbarWarning(View view, String msg , boolean warning) {
         if (view != null) {
             Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_SHORT);
             View view2 = snackbar.getView();
@@ -121,20 +121,26 @@ public class RecordFragment extends Fragment {
     private final View.OnClickListener onClickResetSaveListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            if (binding == null) return;
+            if (viewModel == null) return;
+            final FragmentRecordBinding _binding = binding;
+            final MyViewModel _viewModel = viewModel;
+
+            String content = _binding.editTextTitle.getText().toString();
+            content = content.replace(",", "");  // 不准有逗号
+            content = content.replace("\n", " ").trim();
+            _binding.editTextTitle.setText(content);
+
             String msg = getString(R.string.msg_count_is_zero);
-            if (binding != null) {
-                String content = binding.editTextTitle.getText().toString();
-                content = content.replace(",", "");  // 不准有逗号
-                content = content.replace("\n", " ").trim();
-                binding.editTextTitle.setText(content);
-                if (!content.equals(viewModel.getTitle())) {
-                    msg = getString(R.string.msg_settting_title) + " " + content;
-                    viewModel.setTitle(content);
-                    viewModel.writeConfig(mContext);
-                }
+            if (!content.equals(viewModel.getTitle())) {
+                msg = getString(R.string.msg_settting_title) + " " + content;
+                _viewModel.setTitle(content);
+                final Context _mContext = mContext;
+                if (mContext != null)
+                    _viewModel.writeConfig(_mContext);
             }
-            if (viewModel.getCount() == 0)
-                SnackbarWarning(view, msg, true);
+            if (_viewModel.getCount() == 0)
+                snackbarWarning(view, msg, true);
             else
                 areYouOk(Gravity.CENTER, getString(R.string.msg_sure_to_record_than_reset), (dlg, which) -> {
                     if (ItemContent.sizeOver()) {
@@ -159,9 +165,13 @@ public class RecordFragment extends Fragment {
         if (mContext!=null)
             ItemContent.readFromFile(mContext);
         if (binding!=null) {
-            binding.textViewCount.setText(viewModel.getCountString());
-            binding.editTextTitle.setText(viewModel.getTitle());
-            binding.buttonReset.setOnClickListener(onClickResetSaveListener);
+            final FragmentRecordBinding _binding = binding;
+            if (viewModel != null) {
+                final MyViewModel _viewModel = viewModel;
+                _binding.textViewCount.setText(_viewModel.getCountString());
+                _binding.editTextTitle.setText(_viewModel.getTitle());
+            }
+            _binding.buttonReset.setOnClickListener(onClickResetSaveListener);
         }
         setupMenu();
     }
@@ -199,16 +209,24 @@ public class RecordFragment extends Fragment {
     }
 
     public void recordCountAdjustStatistic() {
-        String content = viewModel.getTitle();
+        if (viewModel == null) return;
+        final MyViewModel _viewModel = viewModel;
+        String content = _viewModel.getTitle();
         ItemContent.insertItemUpdateList(new CountItem("0", content,
-                viewModel.getCount(), viewModel.getMark()));
-        viewModel.setCount(0);
-        viewModel.setMark(LocalDate.now());
-        binding.textViewCount.setText(viewModel.getCountString());
-        viewModel.writeCountToFile(mContext);
+                _viewModel.getCount(), _viewModel.getMark()));
+        _viewModel.setCount(0);
+        _viewModel.setMark(LocalDate.now());
         adapterNotifyDataSetChanged();
-        ItemContent.writeToFile(mContext);
-        SnackbarWarning(binding.getRoot(), getString(R.string.msg_already_on_top), false);
+        if (mContext != null) {
+            final Context _mContext = mContext;
+            _viewModel.writeCountToFile(_mContext);
+            ItemContent.writeToFile(_mContext);
+        }
+        if (binding != null) {
+            final FragmentRecordBinding _binding = binding;
+            _binding.textViewCount.setText(_viewModel.getCountString());
+            snackbarWarning(_binding.getRoot(), getString(R.string.msg_already_on_top), false);
+        }
     }
 
     public void attachItemTouchHelper(RecyclerView recyclerView, RecyclerView.Adapter adapter)
@@ -263,42 +281,48 @@ public class RecordFragment extends Fragment {
 
     public void attachRecyclerViewItemLongClick(MyItemRecyclerViewAdapter adapter) {
         adapter.setOnRecyclerViewItemLongClickListener((position, itemView) -> {
+            if (mContext == null) return;
+            final Context mContext1 = mContext;
             CountItem countItem = ItemContent.ITEMS.get(position);
             Drawable background = itemView.getBackground();
             itemView.setBackgroundColor(Color.LTGRAY);
-            PopupMenu popupMenu = new PopupMenu(mContext, itemView);
+            PopupMenu popupMenu = new PopupMenu(mContext1, itemView);
             popupMenu.getMenuInflater().inflate(R.menu.menu_popup, popupMenu.getMenu());
             popupMenu.setOnMenuItemClickListener(item -> {
+                if (mContext == null)  return false;
+                if (viewModel == null) return false;
+                if (binding == null) return false;
+                final Context _mContext = mContext;
+                final MyViewModel _viewModel = viewModel;
+                final FragmentRecordBinding _binding = binding;
+
                 if (item.getItemId() == R.id.popup_copy_title) {
-                    if (viewModel == null) return false;
-                    viewModel.setTitle(countItem.getContent());
-                    if (binding != null)
-                        binding.editTextTitle.setText(viewModel.getTitle());
-                    viewModel.writeConfig(mContext);
+                    _viewModel.setTitle(countItem.getContent());
+                    _binding.editTextTitle.setText(_viewModel.getTitle());
+                    _viewModel.writeConfig(_mContext);
                     return true;
                 } else if (item.getItemId() == R.id.popup_bring_front) {
-                    if (viewModel == null) return false;
-                    if (viewModel.getCount() != 0)
+                    if (_viewModel.getCount() != 0)
                     {
-                        SnackbarWarning(binding.getRoot(), getString(R.string.msg_count_number_not_zero), true);
+                        snackbarWarning(_binding.getRoot(), getString(R.string.msg_count_number_not_zero), true);
                         return false;
                     }
-                    viewModel.setTitle(countItem.getContent());
-                    viewModel.setCount(countItem.getCount());
-                    viewModel.setMark(countItem.getMark());
-                    binding.editTextTitle.setText(viewModel.getTitle());
-                    binding.textViewCount.setText(viewModel.getCountString());
-                    viewModel.writeConfig(mContext);
-                    viewModel.writeCountToFile(mContext);
+                    _viewModel.setTitle(countItem.getContent());
+                    _viewModel.setCount(countItem.getCount());
+                    _viewModel.setMark(countItem.getMark());
+                    _binding.editTextTitle.setText(_viewModel.getTitle());
+                    _binding.textViewCount.setText(_viewModel.getCountString());
+                    _viewModel.writeConfig(_mContext);
+                    _viewModel.writeCountToFile(_mContext);
                     ItemContent.ITEMS.remove(position);
-                    ItemContent.writeToFile(mContext);
+                    ItemContent.writeToFile(_mContext);
                     adapter.notifyItemRemoved(position);
                     return true;
                 }
                 return false;
             });
             popupMenu.setOnDismissListener(menu -> itemView.setBackground(background));
-            Vibrator vibrator = (Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE);
+            Vibrator vibrator = (Vibrator) mContext1.getSystemService(Service.VIBRATOR_SERVICE);
             popupMenu.show();
             vibrator.vibrate(VibrationEffect.createOneShot(150, 200));
         });
@@ -364,28 +388,30 @@ public class RecordFragment extends Fragment {
                 if (intent == null) return;
                 Uri uri = intent.getData();
                 if (uri == null) return;
+                if (mContext == null) return;
+                final Context _mContext = mContext;
                 try {
-                    InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
+                    InputStream inputStream = _mContext.getContentResolver().openInputStream(uri);
                     if( inputStream == null ) {
-                        SnackbarWarning(binding.getRoot(), "找不到指定檔案!", true);
+                        snackbarWarning(binding.getRoot(), "找不到指定檔案!", true);
                         return;
                     }
                     boolean b = ItemContent.streamToItems(inputStream);
                     inputStream.close();
                     adapterNotifyDataSetChanged();
 
-                    AlertDialog.Builder builder  = new AlertDialog.Builder(mContext);
+                    AlertDialog.Builder builder  = new AlertDialog.Builder(_mContext);
                     String msg=b?"":getString(R.string.reading_error_msg)+"\r\n";
                     builder.setMessage(msg + getString(R.string.backup_override_confirm));
                     builder.setTitle(R.string.restore_backup);
                     builder.setCancelable(true);
-                    builder.setPositiveButton(R.string.confirm_text, (dlg, wh)->ItemContent.writeToFile(mContext));
+                    builder.setPositiveButton(R.string.confirm_text, (dlg, wh)->ItemContent.writeToFile(_mContext));
                     builder.setNegativeButton(R.string.cancel_text, (dlg, wh)->{
-                        ItemContent.readFromFile(mContext);
+                        ItemContent.readFromFile(_mContext);
                         adapterNotifyDataSetChanged();
                     });
                     builder.setOnDismissListener((dlg)->{
-                        ItemContent.readFromFile(mContext);
+                        ItemContent.readFromFile(_mContext);
                         adapterNotifyDataSetChanged();
                     });
                     AlertDialog dialog = builder.create();
