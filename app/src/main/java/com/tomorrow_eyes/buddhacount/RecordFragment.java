@@ -1,23 +1,10 @@
 package com.tomorrow_eyes.buddhacount;
 
-import static androidx.recyclerview.widget.ItemTouchHelper.Callback;
-import static androidx.recyclerview.widget.ItemTouchHelper.DOWN;
-import static androidx.recyclerview.widget.ItemTouchHelper.END;
-import static androidx.recyclerview.widget.ItemTouchHelper.LEFT;
-import static androidx.recyclerview.widget.ItemTouchHelper.RIGHT;
-import static androidx.recyclerview.widget.ItemTouchHelper.START;
-import static androidx.recyclerview.widget.ItemTouchHelper.UP;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Service;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -29,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -42,21 +28,16 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.tomorrow_eyes.buddhacount.ItemContent.CountItem;
 import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.List;
 
-public class RecordFragment extends Fragment implements MsgUtility {
+public class RecordFragment extends Fragment
+        implements MsgUtility, SwipeItemTouchHelper, BackupRestoreCallback {
 
     private FragmentRecordBinding binding; // Closure內沒有getContext可叫，故存
     private MyViewModel viewModel; // Closure內沒有getContext可叫，故存
@@ -64,6 +45,11 @@ public class RecordFragment extends Fragment implements MsgUtility {
 
     public RecordFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void snackbarWarning(String msg, boolean warning) {  // for other interface to call
+        MsgUtility.super.snackbarWarning(msg,warning);
     }
 
     public static RecordFragment newInstance() {
@@ -154,7 +140,7 @@ public class RecordFragment extends Fragment implements MsgUtility {
         return (RecyclerView) fragment.getView();
     }
 
-    private void adapterNotifyDataSetChanged()
+    public void adapterNotifyDataSetChanged()
     {
         RecyclerView recyclerView = getSubRecyclerView();
         if (recyclerView == null) return;
@@ -183,54 +169,6 @@ public class RecordFragment extends Fragment implements MsgUtility {
         }
     }
 
-    public void attachItemTouchHelper(RecyclerView recyclerView, RecyclerView.Adapter adapter)
-    {
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new Callback() {
-            @Override
-            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
-                    final int dragFlags = UP | DOWN | LEFT | RIGHT;
-                    final int swipeFlags = 0;
-                    return makeMovementFlags(dragFlags, swipeFlags);
-                } else {
-                    final int dragFlags = UP | DOWN;
-                    final int swipeFlags = START | END;
-                    return makeMovementFlags(dragFlags, swipeFlags);
-                }
-            }
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAbsoluteAdapterPosition();
-                CountItem item = ItemContent.ITEMS.get(position);
-                AlertDialog.Builder dlg  = new AlertDialog.Builder(mContext);
-                String title = item.getContent();
-                if (title.length() > 7) title= title.substring(0, 7)+"..";
-                dlg.setMessage(String.format("<%s> %s   %d", item.getId(), title, item.getCount()));
-                dlg.setTitle(R.string.confirm_delete);
-                dlg.setCancelable(true);
-                dlg.setPositiveButton(R.string.confirm_text, (dialog, which) -> {
-                    ItemContent.ITEMS.remove(position);
-                    ItemContent.writeToFile(mContext);
-                    adapter.notifyItemRemoved(position);
-                });
-                dlg.setNegativeButton(R.string.cancel_text, null);
-                dlg.setOnDismissListener(dialog1 -> adapter.notifyItemChanged(position));
-                dlg.create().show();
-            }
-
-            @Override
-            public boolean isLongPressDragEnabled() {
-                return false;
-            }
-        });
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-    }
 
     public void attachRecyclerViewItemLongClick(MyItemRecyclerViewAdapter adapter) {
         if (mContext == null ) return;
@@ -310,70 +248,11 @@ public class RecordFragment extends Fragment implements MsgUtility {
 
     ActivityResultLauncher<Intent> mBackupForResult =
         registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent intent = result.getData();
-                    if (intent == null) return;
-                    Uri uri = intent.getData();
-                    if (uri == null) return;
-                    try {
-                        // 必需getContext(),不能用mContext, 因為回來Activity可能己經殺了
-                        ContentResolver resolver = requireContext().getContentResolver();
-                        // 用Intent.ACTION_CREATE_DOCUMENT不會同名，會加(1)
-                        // write truncate需要嗎? 但確實發現覆寫，結束後面還有
-                        OutputStream os = resolver.openOutputStream(uri, "wt"); // write truncate,
-                        if( os != null ) {
-                            os.write(ItemContent.getBytes());
-                            os.close();
-                        }
-                    }
-                    catch(IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-        });
+                                  result -> {  backupCallback(result); }
+        );
     ActivityResultLauncher<Intent> mRestoreForResult =
-        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == Activity.RESULT_OK) {
-                Intent intent = result.getData();
-                if (intent == null) return;
-                Uri uri = intent.getData();
-                if (uri == null) return;
-                // 必需getContext(),不能用mContext, 因為回來Activity可能己經殺了
-                if (getContext() == null) return;
-                final Context _mContext = getContext();
-                try {
-                    InputStream inputStream = _mContext.getContentResolver().openInputStream(uri);
-                    if( inputStream == null ) {
-                        snackbarWarning("找不到指定檔案!", true);
-                        return;
-                    }
-                    boolean b = ItemContent.streamToItems(inputStream);
-                    inputStream.close();
-                    adapterNotifyDataSetChanged();
-
-                    AlertDialog.Builder builder  = new AlertDialog.Builder(_mContext);
-                    String msg=b?"":getString(R.string.reading_error_msg)+"\r\n";
-                    builder.setMessage(msg + getString(R.string.backup_override_confirm));
-                    builder.setTitle(R.string.restore_backup);
-                    builder.setCancelable(true);
-                    builder.setPositiveButton(R.string.confirm_text, (dlg, wh)->ItemContent.writeToFile(_mContext));
-                    builder.setNegativeButton(R.string.cancel_text, (dlg, wh)->{
-                        ItemContent.readFromFile(_mContext);
-                        adapterNotifyDataSetChanged();
-                    });
-                    builder.setOnDismissListener((dlg)->{
-                        ItemContent.readFromFile(_mContext);
-                        adapterNotifyDataSetChanged();
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.getWindow().setGravity(Gravity.BOTTOM);
-                    dialog.show();
-                }
-                catch(IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                                  result -> {   restoreCallback(result); }
+        );
 
 }
