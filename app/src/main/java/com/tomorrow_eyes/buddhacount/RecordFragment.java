@@ -41,7 +41,6 @@ public class RecordFragment extends Fragment
 
     private FragmentRecordBinding binding; // Closure內沒有getContext可叫，故存
     private MyViewModel viewModel; // Closure內沒有getContext可叫，故存
-    private Context mContext;      // Closure內沒有getContext可叫，故存
 
     public RecordFragment() {
         // Required empty public constructor
@@ -76,12 +75,11 @@ public class RecordFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupMenu();
-        mContext = getContext();
-        if (mContext ==null) return;
+        final Context _context = getContext();
+        if (_context ==null) return;
         if (binding == null) return;
         if (viewModel == null) return;
-        final Context _mContext = mContext;
-        ItemContent.readFromFile(mContext);
+        ItemContent.readFromFile(_context);
         final FragmentRecordBinding _binding = binding;
         final MyViewModel _viewModel = viewModel;
         _binding.textViewCount.setText(_viewModel.getCountString());
@@ -96,7 +94,7 @@ public class RecordFragment extends Fragment
             if (!content.equals(_viewModel.getTitle())) {
                 msg = getString(R.string.msg_settting_title) + " " + content;
                 _viewModel.setTitle(content);
-                _viewModel.writeConfig(_mContext);
+                _viewModel.writeConfig(_context);
             }
             if (_viewModel.getCount() == 0)
                 snackbarWarning(msg, true);
@@ -157,10 +155,10 @@ public class RecordFragment extends Fragment
         _viewModel.setCount(0);
         _viewModel.setMark(LocalDate.now());
         adapterNotifyDataSetChanged();
-        if (mContext != null) {
-            final Context _mContext = mContext;
-            _viewModel.writeCountToFile(_mContext);
-            ItemContent.writeToFile(_mContext);
+        final Context _context = getContext();
+        if (_context != null) {
+            _viewModel.writeCountToFile(_context);
+            ItemContent.writeToFile(_context);
         }
         if (binding != null) {
             final FragmentRecordBinding _binding = binding;
@@ -171,23 +169,23 @@ public class RecordFragment extends Fragment
 
 
     public void attachRecyclerViewItemLongClick(MyItemRecyclerViewAdapter adapter) {
-        if (mContext == null ) return;
+        final Context _context = getContext();
+        if (_context == null ) return;
         if (viewModel == null) return;
         if (binding == null) return ;
-        final Context _mContext = mContext;
         final MyViewModel _viewModel = viewModel;
         final FragmentRecordBinding _binding = binding;
         adapter.setOnRecyclerViewItemLongClickListener((position, itemView) -> {
             CountItem countItem = ItemContent.ITEMS.get(position);
             Drawable background = itemView.getBackground();
             itemView.setBackgroundColor(Color.LTGRAY);
-            PopupMenu popupMenu = new PopupMenu(_mContext, itemView);
+            PopupMenu popupMenu = new PopupMenu(_context, itemView);
             popupMenu.getMenuInflater().inflate(R.menu.menu_popup, popupMenu.getMenu());
             popupMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.popup_copy_title) {
                     _viewModel.setTitle(countItem.getContent());
                     _binding.editTextTitle.setText(_viewModel.getTitle());
-                    _viewModel.writeConfig(_mContext);
+                    _viewModel.writeConfig(_context);
                     return true;
                 } else if (item.getItemId() == R.id.popup_bring_front) {
                     if (_viewModel.getCount() != 0)
@@ -200,17 +198,17 @@ public class RecordFragment extends Fragment
                     _viewModel.setMark(countItem.getMark());
                     _binding.editTextTitle.setText(_viewModel.getTitle());
                     _binding.textViewCount.setText(_viewModel.getCountString());
-                    _viewModel.writeConfig(_mContext);
-                    _viewModel.writeCountToFile(_mContext);
+                    _viewModel.writeConfig(_context);
+                    _viewModel.writeCountToFile(_context);
                     ItemContent.ITEMS.remove(position);
-                    ItemContent.writeToFile(_mContext);
+                    ItemContent.writeToFile(_context);
                     adapter.notifyItemRemoved(position);
                     return true;
                 }
                 return false;
             });
             popupMenu.setOnDismissListener(menu -> itemView.setBackground(background));
-            Vibrator vibrator = (Vibrator) _mContext.getSystemService(Service.VIBRATOR_SERVICE);
+            Vibrator vibrator = (Vibrator) _context.getSystemService(Service.VIBRATOR_SERVICE);
             popupMenu.show();
             vibrator.vibrate(VibrationEffect.createOneShot(150, 200));
         });
