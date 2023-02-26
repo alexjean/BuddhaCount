@@ -56,7 +56,7 @@ import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.List;
 
-public class RecordFragment extends Fragment {
+public class RecordFragment extends Fragment implements MsgUtility {
 
     private FragmentRecordBinding binding; // Closure內沒有getContext可叫，故存
     private MyViewModel viewModel; // Closure內沒有getContext可叫，故存
@@ -66,18 +66,11 @@ public class RecordFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     public static RecordFragment newInstance() {
         RecordFragment fragment = new RecordFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // setHasOptionsMenu(true);  // deprecated
     }
 
     @Override
@@ -93,34 +86,6 @@ public class RecordFragment extends Fragment {
         return binding.getRoot();
     }
 
-    public void snackbarWarning(String msg , boolean warning) {
-        View view = getView();
-        if (view != null) {
-            final View _view = view;
-            Snackbar snackbar = Snackbar.make(_view, msg, Snackbar.LENGTH_SHORT);
-            View view2 = snackbar.getView();
-            TextView tv = view2.findViewById(com.google.android.material.R.id.snackbar_text);
-            tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            snackbar.show();
-        }
-        if (warning) {
-            Vibrator vibrator = (Vibrator) getContext().getSystemService(Service.VIBRATOR_SERVICE);
-            vibrator.vibrate(VibrationEffect.createOneShot(350, 200));
-        }
-    }
-
-    private void areYouOk(int gravity, String msg, DialogInterface.OnClickListener onClickListener) {
-        AlertDialog.Builder builder  = new AlertDialog.Builder(getContext());
-        builder.setMessage(msg);
-        builder.setTitle(R.string.button_reset);
-        builder.setCancelable(true);
-        builder.setPositiveButton(R.string.confirm_text, onClickListener);
-        builder.setNegativeButton(R.string.cancel_text, null);
-        AlertDialog dialog = builder.create();
-        dialog.getWindow().setGravity(gravity);
-        dialog.show();
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -129,27 +94,23 @@ public class RecordFragment extends Fragment {
         if (mContext ==null) return;
         if (binding == null) return;
         if (viewModel == null) return;
+        final Context _mContext = mContext;
         ItemContent.readFromFile(mContext);
         final FragmentRecordBinding _binding = binding;
-        if (viewModel != null) {
-            final MyViewModel _viewModel = viewModel;
-            _binding.textViewCount.setText(_viewModel.getCountString());
-            _binding.editTextTitle.setText(_viewModel.getTitle());
-        }
+        final MyViewModel _viewModel = viewModel;
+        _binding.textViewCount.setText(_viewModel.getCountString());
+        _binding.editTextTitle.setText(_viewModel.getTitle());
         _binding.buttonReset.setOnClickListener( view1 -> {
-            final MyViewModel _viewModel = viewModel;
             String content = _binding.editTextTitle.getText().toString();
             content = content.replace(",", "");  // 不准有逗号
             content = content.replace("\n", " ").trim();
             _binding.editTextTitle.setText(content);
 
             String msg = getString(R.string.msg_count_is_zero);
-            if (!content.equals(viewModel.getTitle())) {
+            if (!content.equals(_viewModel.getTitle())) {
                 msg = getString(R.string.msg_settting_title) + " " + content;
                 _viewModel.setTitle(content);
-                final Context _mContext = mContext;
-                if (mContext != null)
-                    _viewModel.writeConfig(_mContext);
+                _viewModel.writeConfig(_mContext);
             }
             if (_viewModel.getCount() == 0)
                 snackbarWarning(msg, true);
@@ -189,7 +150,7 @@ public class RecordFragment extends Fragment {
         List<Fragment> list = fragmentManager.getFragments();
         if (list.isEmpty()) return null;
         Fragment fragment = list.get(0);
-        if (!(fragment instanceof ItemFragment)) return null;
+        if (!(fragment instanceof ItemListFragment)) return null;
         return (RecyclerView) fragment.getView();
     }
 
@@ -357,7 +318,7 @@ public class RecordFragment extends Fragment {
                     if (uri == null) return;
                     try {
                         // 必需getContext(),不能用mContext, 因為回來Activity可能己經殺了
-                        ContentResolver resolver = getContext().getContentResolver();
+                        ContentResolver resolver = requireContext().getContentResolver();
                         // 用Intent.ACTION_CREATE_DOCUMENT不會同名，會加(1)
                         // write truncate需要嗎? 但確實發現覆寫，結束後面還有
                         OutputStream os = resolver.openOutputStream(uri, "wt"); // write truncate,
@@ -414,6 +375,5 @@ public class RecordFragment extends Fragment {
                 }
             }
         });
-
 
 }

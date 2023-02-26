@@ -8,10 +8,9 @@
     android:background="@color/alex_background"
     tools:context=".RecordFragment">
 
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
-        android:name="com.tomorrow_eyes.buddhacount.ItemFragment"
+        android:name="com.tomorrow_eyes.buddhacount.ItemListFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="16dp"
@@ -20,7 +19,8 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout="@layout/fragment_item_list" />
 
     <Button
         android:id="@+id/button_reset"

@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class ItemFragment : Fragment() {
+class ItemListFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -23,8 +23,8 @@ class ItemFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(): ItemFragment {
-            val fragment = ItemFragment()
+        fun newInstance(): ItemListFragment {
+            val fragment = ItemListFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment
