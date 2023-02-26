@@ -36,8 +36,8 @@ import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 import java.time.LocalDate;
 import java.util.List;
 
-public class RecordFragment extends Fragment
-        implements MsgUtility, SwipeItemTouchHelper, BackupRestoreCallback {
+public class RecordFragment extends Fragment implements MsgUtility,
+        SwipeItemTouchHelper, LongClickItemHelper, BackupRestoreCallback {
 
     private FragmentRecordBinding binding; // Closure內沒有getContext可叫，故存
     private MyViewModel viewModel; // Closure內沒有getContext可叫，故存
@@ -122,7 +122,7 @@ public class RecordFragment extends Fragment
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
         if (adapter == null) return;
         if (adapter instanceof MyItemRecyclerViewAdapter)
-            attachRecyclerViewItemLongClick((MyItemRecyclerViewAdapter) adapter);
+            attachRecyclerViewItemLongClick((MyItemRecyclerViewAdapter) adapter, viewModel, binding);
         attachItemTouchHelper(recyclerView, adapter);  // 在onViewCreated呼叫,recyclerView還是null
     }
 
@@ -148,70 +148,23 @@ public class RecordFragment extends Fragment
 
     public void recordCountAdjustStatistic() {
         if (viewModel == null) return;
-        final MyViewModel _viewModel = viewModel;
-        String content = _viewModel.getTitle();
+        final MyViewModel _vm = viewModel;
+        String content = _vm.getTitle();
         ItemContent.insertItemUpdateList(new CountItem("0", content,
-                _viewModel.getCount(), _viewModel.getMark()));
-        _viewModel.setCount(0);
-        _viewModel.setMark(LocalDate.now());
+                _vm.getCount(), _vm.getMark()));
+        _vm.setCount(0);
+        _vm.setMark(LocalDate.now());
         adapterNotifyDataSetChanged();
         final Context _context = getContext();
         if (_context != null) {
-            _viewModel.writeCountToFile(_context);
+            _vm.writeCountToFile(_context);
             ItemContent.writeToFile(_context);
         }
         if (binding != null) {
             final FragmentRecordBinding _binding = binding;
-            _binding.textViewCount.setText(_viewModel.getCountString());
+            _binding.textViewCount.setText(_vm.getCountString());
             snackbarWarning(getString(R.string.msg_already_on_top), false);
         }
-    }
-
-
-    public void attachRecyclerViewItemLongClick(MyItemRecyclerViewAdapter adapter) {
-        final Context _context = getContext();
-        if (_context == null ) return;
-        if (viewModel == null) return;
-        if (binding == null) return ;
-        final MyViewModel _viewModel = viewModel;
-        final FragmentRecordBinding _binding = binding;
-        adapter.setOnRecyclerViewItemLongClickListener((position, itemView) -> {
-            CountItem countItem = ItemContent.ITEMS.get(position);
-            Drawable background = itemView.getBackground();
-            itemView.setBackgroundColor(Color.LTGRAY);
-            PopupMenu popupMenu = new PopupMenu(_context, itemView);
-            popupMenu.getMenuInflater().inflate(R.menu.menu_popup, popupMenu.getMenu());
-            popupMenu.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == R.id.popup_copy_title) {
-                    _viewModel.setTitle(countItem.getContent());
-                    _binding.editTextTitle.setText(_viewModel.getTitle());
-                    _viewModel.writeConfig(_context);
-                    return true;
-                } else if (item.getItemId() == R.id.popup_bring_front) {
-                    if (_viewModel.getCount() != 0)
-                    {
-                        snackbarWarning(getString(R.string.msg_count_number_not_zero), true);
-                        return false;
-                    }
-                    _viewModel.setTitle(countItem.getContent());
-                    _viewModel.setCount(countItem.getCount());
-                    _viewModel.setMark(countItem.getMark());
-                    _binding.editTextTitle.setText(_viewModel.getTitle());
-                    _binding.textViewCount.setText(_viewModel.getCountString());
-                    _viewModel.writeConfig(_context);
-                    _viewModel.writeCountToFile(_context);
-                    ItemContent.ITEMS.remove(position);
-                    ItemContent.writeToFile(_context);
-                    adapter.notifyItemRemoved(position);
-                    return true;
-                }
-                return false;
-            });
-            popupMenu.setOnDismissListener(menu -> itemView.setBackground(background));
-            Vibrator vibrator = (Vibrator) _context.getSystemService(Service.VIBRATOR_SERVICE);
-            popupMenu.show();
-            vibrator.vibrate(VibrationEffect.createOneShot(150, 200));
-        });
     }
 
     public void setupMenu() {
