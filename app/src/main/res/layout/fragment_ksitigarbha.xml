@@ -37,6 +37,7 @@
         android:layout_width="266dp"
         android:layout_height="186dp"
         android:background="@drawable/ic_smile_24"
+        android:contentDescription="@string/amitabha"
         app:layout_constraintBottom_toTopOf="@+id/button_first"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

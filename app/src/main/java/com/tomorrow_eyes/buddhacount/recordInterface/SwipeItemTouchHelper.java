@@ -1,4 +1,4 @@
-package com.tomorrow_eyes.buddhacount;
+package com.tomorrow_eyes.buddhacount.recordInterface;
 
 import static androidx.recyclerview.widget.ItemTouchHelper.DOWN;
 import static androidx.recyclerview.widget.ItemTouchHelper.END;
@@ -15,6 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.tomorrow_eyes.buddhacount.ItemContent;
+import com.tomorrow_eyes.buddhacount.R;
 
 public interface SwipeItemTouchHelper {
     @Nullable

@@ -1,4 +1,4 @@
-package com.tomorrow_eyes.buddhacount;
+package com.tomorrow_eyes.buddhacount.recordInterface;
 
 import android.app.AlertDialog;
 import android.app.Service;
@@ -12,12 +12,13 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.tomorrow_eyes.buddhacount.R;
 
 public interface MsgUtility {
     @Nullable
-    abstract public View getView();
+    View getView();
     @Nullable
-    abstract public Context getContext();
+    Context getContext();
 
     default void snackbarWarning(String msg, boolean warning) {
         View _view = getView();

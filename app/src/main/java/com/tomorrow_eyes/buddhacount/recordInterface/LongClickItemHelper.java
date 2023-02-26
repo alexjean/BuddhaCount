@@ -1,4 +1,4 @@
-package com.tomorrow_eyes.buddhacount;
+package com.tomorrow_eyes.buddhacount.recordInterface;
 
 import android.app.Service;
 import android.content.Context;
@@ -9,6 +9,10 @@ import android.os.Vibrator;
 import android.widget.PopupMenu;
 
 
+import com.tomorrow_eyes.buddhacount.ItemContent;
+import com.tomorrow_eyes.buddhacount.MyItemRecyclerViewAdapter;
+import com.tomorrow_eyes.buddhacount.MyViewModel;
+import com.tomorrow_eyes.buddhacount.R;
 import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
 
 public interface LongClickItemHelper {

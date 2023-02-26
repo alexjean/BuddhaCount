@@ -1,13 +1,8 @@
 package com.tomorrow_eyes.buddhacount;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -24,7 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
@@ -32,9 +26,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tomorrow_eyes.buddhacount.ItemContent.CountItem;
 import com.tomorrow_eyes.buddhacount.databinding.FragmentRecordBinding;
+import com.tomorrow_eyes.buddhacount.recordInterface.BackupRestoreCallback;
+import com.tomorrow_eyes.buddhacount.recordInterface.LongClickItemHelper;
+import com.tomorrow_eyes.buddhacount.recordInterface.MsgUtility;
+import com.tomorrow_eyes.buddhacount.recordInterface.SwipeItemTouchHelper;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class RecordFragment extends Fragment implements MsgUtility,
         SwipeItemTouchHelper, LongClickItemHelper, BackupRestoreCallback {
@@ -51,13 +48,6 @@ public class RecordFragment extends Fragment implements MsgUtility,
         MsgUtility.super.snackbarWarning(msg,warning);
     }
 
-    public static RecordFragment newInstance() {
-        RecordFragment fragment = new RecordFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -65,9 +55,8 @@ public class RecordFragment extends Fragment implements MsgUtility,
         //return inflater.inflate(R.layout.fragment_record, container, false);
         binding = FragmentRecordBinding.inflate(inflater, container, false);
         ViewModelStoreOwner storeOwner = getActivity();
-        if (storeOwner != null) {
+        if (storeOwner != null)
             viewModel = new ViewModelProvider(storeOwner).get(MyViewModel.class);
-        }
         return binding.getRoot();
     }
 
@@ -127,15 +116,16 @@ public class RecordFragment extends Fragment implements MsgUtility,
     }
 
     private RecyclerView getSubRecyclerView() {
-        // FragmentContainerView containerView = binding.fragmentContainerView;
+        FragmentContainerView containerView = binding.fragmentContainerView;
+        Fragment fragment = containerView.getFragment();
         // not support getFragment() until Fragment:1.4.0
-        //ItemFragment itemFragment = (ItemFragment)containerView.getFragment();
-        FragmentManager fragmentManager = getChildFragmentManager();
-        List<Fragment> list = fragmentManager.getFragments();
-        if (list.isEmpty()) return null;
-        Fragment fragment = list.get(0);
-        if (!(fragment instanceof ItemListFragment)) return null;
-        return (RecyclerView) fragment.getView();
+//        FragmentManager fragmentManager = getChildFragmentManager();
+//        List<Fragment> list = fragmentManager.getFragments();
+//        if (list.isEmpty()) return null;
+//        Fragment fragment = list.get(0);
+        if (fragment instanceof ItemFragment)
+            return (RecyclerView) fragment.getView();
+        return null;
     }
 
     public void adapterNotifyDataSetChanged()
@@ -205,5 +195,4 @@ public class RecordFragment extends Fragment implements MsgUtility,
         registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                                   result -> {   restoreCallback(result); }
         );
-
 }

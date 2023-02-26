@@ -1,4 +1,4 @@
-package com.tomorrow_eyes.buddhacount;
+package com.tomorrow_eyes.buddhacount.recordInterface;
 
 
 import android.app.Activity;
@@ -11,6 +11,9 @@ import android.view.Gravity;
 
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
+
+import com.tomorrow_eyes.buddhacount.ItemContent;
+import com.tomorrow_eyes.buddhacount.R;
 
 import java.io.IOException;
 import java.io.InputStream;

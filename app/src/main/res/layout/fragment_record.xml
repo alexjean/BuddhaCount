@@ -10,7 +10,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
-        android:name="com.tomorrow_eyes.buddhacount.ItemListFragment"
+        android:name="com.tomorrow_eyes.buddhacount.ItemFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="16dp"
