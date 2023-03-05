@@ -189,10 +189,10 @@ public class RecordFragment extends Fragment implements MsgUtility,
 
     ActivityResultLauncher<Intent> mBackupForResult =
         registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                                  result -> {  backupCallback(result); }
+                                  result -> {  backupCallback(result);  }
         );
     ActivityResultLauncher<Intent> mRestoreForResult =
         registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                                  result -> {   restoreCallback(result); }
+                                  this::restoreCallback
         );
 }

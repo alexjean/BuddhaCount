@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
             Fragment navFragment = manager.getPrimaryNavigationFragment();
             if (navFragment == null) return false;
             Fragment frag1 = navFragment.getChildFragmentManager().getFragments().get(0);
+            frag1 = navFragment.getChildFragmentManager().getPrimaryNavigationFragment();
             if (frag1 instanceof KsitigarbhaFragment) {
                 NavController controller = NavHostFragment.findNavController(navFragment);
                 controller.navigate(R.id.action_FirstFragment_self);      // 要加一個 action...self
